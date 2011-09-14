@@ -43,9 +43,19 @@
 #include "ScriptMgr.h"
 #include "Transport.h"
 
+Opcodes PacketFilter::DropHighBytes(Opcodes opcode)
+{
+   if (opcode & 0xFFFF0000) // check if any High byte is present
+       return Opcodes(opcode >> 16);
+
+   else
+       return Opcodes(opcode);
+}
+
 bool MapSessionFilter::Process(WorldPacket* packet)
 {
-    const OpcodeHandler* const opHandle = opcodeTable[packet->GetOpcode()];
+    Opcodes opcode = DropHighBytes(packet->GetOpcode());
+    const OpcodeHandler* opHandle = opcodeTable[opcode];
 
     //let's check if our opcode can be really processed in Map::Update()
     if (opHandle->packetProcessing == PROCESS_INPLACE)
@@ -67,7 +77,8 @@ bool MapSessionFilter::Process(WorldPacket* packet)
 //OR packet handler is not thread-safe!
 bool WorldSessionFilter::Process(WorldPacket* packet)
 {
-    const OpcodeHandler* opHandle = opcodeTable[packet->GetOpcode()];
+    Opcodes opcode = DropHighBytes(packet->GetOpcode());
+    const OpcodeHandler* opHandle = opcodeTable[opcode];
     //check if packet handler is supposed to be safe
     if (opHandle->packetProcessing == PROCESS_INPLACE)
         return true;
