@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
  * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
@@ -43,6 +44,8 @@
 #include "ScriptMgr.h"
 #include "Battleground.h"
 #include "AccountMgr.h"
+#include <utility>
+#include <vector>
 
 class LoginQueryHolder : public SQLQueryHolder
 {
@@ -193,34 +196,111 @@ bool LoginQueryHolder::Initialize()
     stmt->setUInt32(0, m_accountId);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOADINSTANCELOCKTIMES, stmt);
 
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_LOAD_CURRENCY);
+    stmt->setUInt32(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOADCURRENCY, stmt);
+
     return res;
 }
 
 void WorldSession::HandleCharEnum(QueryResult result)
 {
-    WorldPacket data(SMSG_CHAR_ENUM, 100);                  // we guess size
+    WorldPacket data(SMSG_CHAR_ENUM, 270);
 
-    uint8 num = 0;
+    data << uint8(0x80); // 0 causes the client to free memory of charlist
+    data << uint32(0); // unk loop counter
+    data << uint32(0); // number of characters
 
-    data << num;
-
-    _allowedCharsToLogin.clear();
     if (result)
     {
+        typedef std::pair<uint32, uint32> Guids;
+        std::vector<Guids> guidsVect;
+        ByteBuffer buffer;
+        _allowedCharsToLogin.clear();
+
         do
         {
             uint32 guidlow = (*result)[0].GetUInt32();
+            uint32 atLoginFlags = (*result)[15].GetUInt32();
+            guidsVect.push_back(std::make_pair(guidlow, atLoginFlags));
             sLog->outDetail("Loading char guid %u from account %u.", guidlow, GetAccountId());
-            if (Player::BuildEnumData(result, &data))
+            if (!Player::BuildEnumData(result, &buffer))
             {
-                _allowedCharsToLogin.insert(guidlow);
-                ++num;
+                sLog->outError("Building enum data for SMSG_CHAR_ENUM has failed, aborting");
+                return;
             }
+            _allowedCharsToLogin.insert(guidlow);
         }
         while (result->NextRow());
-    }
 
-    data.put<uint8>(0, num);
+        uint8 curRes = 0;
+        uint8 curPos = 0;
+
+        for (std::vector<Guids>::iterator itr = guidsVect.begin(); itr != guidsVect.end(); ++itr)
+        {
+            uint32 guid = (*itr).first;
+            uint32 loginFlags = (*itr).second;
+
+            for (uint8 i = 0; i < 17; ++i)
+            {
+                if (curPos == 8)
+                {
+                    data << curRes;
+                    curRes = 0;
+                    curPos = 0;
+                }
+
+                ++curPos;
+                uint8 offset = 8 - curPos;
+
+                switch (i)
+                {
+                    case 0:
+                    {
+                        if (uint8(guid) != 0)
+                            curRes |= (1 << offset);
+
+                        break;
+                    }
+                    case 1:
+                    {
+                        if (loginFlags & AT_LOGIN_FIRST)
+                            curRes |= (1 << offset);
+
+                        break;
+                    }
+                    case 7:
+                    {
+                        if (uint8(guid >> 8) != 0)
+                            curRes |= (1 << offset);
+
+                        break;
+                    }
+                    case 11:
+                    {
+                        if (uint8(guid >> 24) != 0)
+                            curRes |= (1 << offset);
+
+                        break;
+                    }
+                    case 12:
+                    {
+                        if (uint8(guid >> 16) != 0)
+                            curRes |= (1 << offset);
+
+                        break;
+                    }
+                }
+                // Missing from packet: Player High GUID, Guild GUID (8 bytes)
+            }
+        }
+
+        if (curPos != 0)
+            data << curRes;
+
+        data.append(buffer);
+        data.put<uint32>(5, guidsVect.size());
+    }
 
     SendPacket(&data);
 }
@@ -380,6 +460,42 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
         data << (uint8)CHAR_NAME_RESERVED;
         SendPacket(&data);
         return;
+    }
+
+    if (sObjectMgr->GetPlayerGUIDByName(name))
+    {
+        data << (uint8)CHAR_CREATE_NAME_IN_USE;
+        SendPacket(&data);
+        return;
+    }
+
+    QueryResult resultacct = LoginDatabase.PQuery("SELECT IFNULL(SUM(numchars), 0) FROM realmcharacters WHERE acctid = '%d'", GetAccountId());
+    if (resultacct)
+    {
+        Field *fields = resultacct->Fetch();
+        uint32 acctcharcount = fields[0].GetUInt32();
+
+        if (acctcharcount >= sWorld->getIntConfig(CONFIG_CHARACTERS_PER_ACCOUNT))
+        {
+            data << (uint8)CHAR_CREATE_ACCOUNT_LIMIT;
+            SendPacket(&data);
+            return;
+        }
+    }
+
+    QueryResult result = CharacterDatabase.PQuery("SELECT COUNT(guid) FROM characters WHERE account = '%d'", GetAccountId());
+    uint8 charcount = 0;
+    if (result)
+    {
+        Field *fields=result->Fetch();
+        charcount = fields[0].GetUInt8();
+
+        if (charcount >= sWorld->getIntConfig(CONFIG_CHARACTERS_PER_REALM))
+        {
+            data << (uint8)CHAR_CREATE_SERVER_LIMIT;
+            SendPacket(&data);
+            return;
+        }
     }
 
     // speedup check for heroic class disabled case
@@ -699,6 +815,7 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket & recv_data)
 {
     uint64 guid;
     recv_data >> guid;
+    guid ^= 1;
 
     // can't delete loaded character
     if (ObjectAccessor::FindPlayer(guid))
@@ -756,6 +873,14 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket & recv_data)
     SendPacket(&data);
 }
 
+void WorldSession::HandleWorldLoginOpcode(WorldPacket& recv_data)
+{
+    sLog->outStaticDebug("WORLD: Recvd World Login Message");
+    uint32 unk;
+    uint8 unk1;
+    recv_data >> unk >> unk1;
+}
+
 void WorldSession::HandlePlayerLoginOpcode(WorldPacket & recv_data)
 {
     if (PlayerLoading() || GetPlayer() != NULL)
@@ -766,10 +891,36 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket & recv_data)
 
     m_playerLoading = true;
     uint64 playerGuid = 0;
+    uint8 guidMask = 0;
+    uint8 data = 0;
 
     sLog->outStaticDebug("WORLD: Recvd Player Logon Message");
 
-    recv_data >> playerGuid;
+    recv_data >> guidMask;
+
+    if (guidMask & 0x4)
+    {
+        recv_data >> data;
+        playerGuid |= uint64(data << 8);
+    }
+
+    if (guidMask & 0x10)
+    {
+        recv_data >> data;
+        playerGuid |= uint64(data << 24);
+    }
+
+    if (guidMask & 0x20)
+    {
+        recv_data >> data;
+        playerGuid |= uint64(data << 16);
+    }
+
+    if (guidMask & 0x40)
+    {
+        recv_data >> data;
+        playerGuid |= uint64(data);
+    }
 
     if (!CharCanLogin(GUID_LOPART(playerGuid)))
     {
@@ -825,32 +976,33 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
     LoadAccountData(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACCOUNTDATA), PER_CHARACTER_CACHE_MASK);
     SendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
 
-    data.Initialize(SMSG_FEATURE_SYSTEM_STATUS, 2);         // added in 2.2.0
+    data.Initialize(SMSG_FEATURE_SYSTEM_STATUS, 6);         // added in 2.2.0
     data << uint8(2);                                       // unknown value
     data << uint8(0);                                       // enable(1)/disable(0) voice chat interface in client
+    data << uint32(0);                                      // unk
     SendPacket(&data);
 
     // Send MOTD
     {
         data.Initialize(SMSG_MOTD, 50);                     // new in 2.0.1
-        data << (uint32)0;
+        data << uint32(0);
 
-        uint32 linecount=0;
+        uint32 linecount = 0;
         std::string str_motd = sWorld->GetMotd();
         std::string::size_type pos, nextpos;
 
         pos = 0;
-        while ((nextpos= str_motd.find('@', pos)) != std::string::npos)
+        while ((nextpos = str_motd.find('@', pos)) != std::string::npos)
         {
             if (nextpos != pos)
             {
                 data << str_motd.substr(pos, nextpos-pos);
                 ++linecount;
             }
-            pos = nextpos+1;
+            pos = nextpos + 1;
         }
 
-        if (pos<str_motd.length())
+        if (pos < str_motd.length())
         {
             data << str_motd.substr(pos);
             ++linecount;
@@ -937,7 +1089,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
     pCurrChar->SetInGameTime(getMSTime());
 
     // announce group about member online (must be after add to player list to receive announce to self)
-    if (Group* group = pCurrChar->GetGroup())
+    if (Group *group = pCurrChar->GetGroup())
     {
         //pCurrChar->groupInfo.group->SendInit(this); // useless
         group->SendUpdate();
@@ -1034,7 +1186,33 @@ void WorldSession::HandleSetFactionAtWar(WorldPacket & recv_data)
 void WorldSession::HandleSetFactionCheat(WorldPacket & /*recv_data*/)
 {
     sLog->outError("WORLD SESSION: HandleSetFactionCheat, not expected call, please report.");
+    /*
+        uint32 FactionID;
+        uint32 Standing;
+
+        recv_data >> FactionID;
+        recv_data >> Standing;
+
+        std::list<struct Factions>::iterator itr;
+
+        for (itr = GetPlayer()->factions.begin(); itr != GetPlayer()->factions.end(); ++itr)
+        {
+            if (itr->ReputationListID == FactionID)
+            {
+                itr->Standing += Standing;
+                itr->Flags = (itr->Flags | 1);
+                break;
+            }
+        }
+    */
     GetPlayer()->GetReputationMgr().SendStates();
+}
+
+void WorldSession::HandleMeetingStoneInfo(WorldPacket & /*recv_data*/)
+{
+    sLog->outStaticDebug("WORLD: Received CMSG_MEETING_STONE_INFO");
+
+    //SendLfgUpdate(0, 0, 0);
 }
 
 void WorldSession::HandleTutorialFlag(WorldPacket & recv_data)

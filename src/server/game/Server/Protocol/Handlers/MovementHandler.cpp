@@ -242,7 +242,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPacket& recv_data)
 
 void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 {
-    uint16 opcode = recv_data.GetOpcode();
+    Opcodes opcode = recv_data.GetOpcode();
 
     Unit *mover = _player->m_mover;
 
@@ -392,7 +392,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
 void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
 {
-    uint32 opcode = recv_data.GetOpcode();
+    Opcodes opcode = recv_data.GetOpcode();
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(opcode), opcode, opcode);
 
     /* extract packet */

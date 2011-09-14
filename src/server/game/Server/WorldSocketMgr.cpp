@@ -218,8 +218,7 @@ WorldSocketMgr::WorldSocketMgr() :
     m_SockOutUBuff(65536),
     m_UseNoDelay(true),
     m_Acceptor (0)
-{
-}
+{}
 
 WorldSocketMgr::~WorldSocketMgr()
 {

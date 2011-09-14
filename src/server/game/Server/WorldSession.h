@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
  * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
@@ -28,7 +29,7 @@
 #include "AddonMgr.h"
 #include "DatabaseEnv.h"
 #include "World.h"
-#include "WorldPacket.h"
+#include "Opcodes.h"
 
 struct ItemTemplate;
 struct AuctionEntry;
@@ -147,6 +148,7 @@ public:
 
     virtual bool Process(WorldPacket * /*packet*/) { return true; }
     virtual bool ProcessLogout() const { return true; }
+    static Opcodes DropHighBytes(Opcodes opcode);
 
 protected:
     WorldSession * const m_pSession;
@@ -227,6 +229,7 @@ class WorldSession
         void SendAddonsInfo();
 
         void ReadMovementInfo(WorldPacket &data, MovementInfo *mi);
+        void WriteMovementInfo(WorldPacket &data, MovementInfo *mi);
         void WriteMovementInfo(WorldPacket *data, MovementInfo *mi);
 
         void SendPacket(WorldPacket const* packet);
@@ -404,6 +407,7 @@ class WorldSession
         void HandleCharCreateOpcode(WorldPacket& recvPacket);
         void HandleCharCreateCallback(PreparedQueryResult result, CharacterCreateInfo* createInfo);
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
+        void HandleWorldLoginOpcode(WorldPacket& recvPacket);
         void HandleCharEnum(QueryResult result);
         void HandlePlayerLogin(LoginQueryHolder * holder);
         void HandleCharFactionOrRaceChange(WorldPacket& recv_data);
@@ -468,6 +472,7 @@ class WorldSession
         void HandleTogglePvP(WorldPacket& recvPacket);
 
         void HandleZoneUpdateOpcode(WorldPacket& recvPacket);
+        void HandleSetTargetOpcode(WorldPacket& recvPacket);
         void HandleSetSelectionOpcode(WorldPacket& recvPacket);
         void HandleStandStateChangeOpcode(WorldPacket& recvPacket);
         void HandleEmoteOpcode(WorldPacket& recvPacket);
@@ -480,7 +485,6 @@ class WorldSession
         void HandleDelIgnoreOpcode(WorldPacket& recvPacket);
         void HandleSetContactNotesOpcode(WorldPacket& recvPacket);
         void HandleBugOpcode(WorldPacket& recvPacket);
-        void HandleSetAmmoOpcode(WorldPacket& recvPacket);
         void HandleItemNameQueryOpcode(WorldPacket& recvPacket);
 
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
@@ -495,6 +499,7 @@ class WorldSession
         void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
 
         void HandleGameObjectUseOpcode(WorldPacket& recPacket);
+        void HandleMeetingStoneInfo(WorldPacket& recPacket);
         void HandleGameobjectReportUse(WorldPacket& recvPacket);
 
         void HandleNameQueryOpcode(WorldPacket& recvPacket);
@@ -688,8 +693,24 @@ class WorldSession
         void HandlePushQuestToParty(WorldPacket& recvPacket);
         void HandleQuestPushResult(WorldPacket& recvPacket);
 
-        bool processChatmessageFurtherAfterSecurityChecks(std::string&, uint32);
-        void HandleMessagechatOpcode(WorldPacket& recvPacket);
+        bool processChatmessageFurtherAfterSecurityChecks(std::string&, uint32 lang);
+        void HandleMessagechatOpcode(WorldPacket& recvPacket, uint32 type);
+        void HandleMessagechatSayOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatYellOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatChannelOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatWhisperOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatGuildOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatOfficerOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatAfkOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatDndOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatEmoteOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatPartyOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatPartyGuideOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatRaidOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatRaidLeaderOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatRaidWarningOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatBattlegroundOpcode(WorldPacket& recvPacket);
+        void HandleMessagechatBattlegroundLeaderOpcode(WorldPacket& recvPacket);
         void SendPlayerNotFoundNotice(std::string name);
         void SendPlayerAmbiguousNotice(std::string name);
         void SendWrongFactionNotice();
@@ -743,6 +764,7 @@ class WorldSession
         void HandlePetAbandon(WorldPacket & recv_data);
         void HandlePetRename(WorldPacket & recv_data);
         void HandlePetCancelAuraOpcode(WorldPacket& recvPacket);
+        void HandlePetUnlearnOpcode(WorldPacket& recvPacket);
         void HandlePetSpellAutocastOpcode(WorldPacket& recvPacket);
         void HandlePetCastSpellOpcode(WorldPacket& recvPacket);
         void HandlePetLearnTalent(WorldPacket& recvPacket);
@@ -896,6 +918,7 @@ class WorldSession
         void HandleEnterPlayerVehicle(WorldPacket &data);
         void HandleUpdateProjectilePosition(WorldPacket& recvPacket);
 
+        void HandleViolenceLevelOpcode(WorldPacket& recvPacket);
     private:
         void InitializeQueryCallbackParameters();
         void ProcessQueryCallbacks();

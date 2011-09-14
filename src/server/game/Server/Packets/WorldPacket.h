@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
  * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
@@ -20,33 +21,57 @@
 #define TRINITYCORE_WORLDPACKET_H
 
 #include "Common.h"
+#include "Opcodes.h"
 #include "ByteBuffer.h"
 
 class WorldPacket : public ByteBuffer
 {
     public:
                                                             // just container for later use
-        WorldPacket()                                       : ByteBuffer(0), m_opcode(0)
+        WorldPacket()                                       : ByteBuffer(0), m_opcode(UNKNOWN_OPCODE)
         {
         }
-        explicit WorldPacket(uint16 opcode, size_t res=200) : ByteBuffer(res), m_opcode(opcode) { }
+        explicit WorldPacket(Opcodes opcode, size_t res = 200) : ByteBuffer(res), m_opcode(opcode) { }
                                                             // copy constructor
         WorldPacket(const WorldPacket &packet)              : ByteBuffer(packet), m_opcode(packet.m_opcode)
         {
         }
 
-        void Initialize(uint16 opcode, size_t newres=200)
+        void Initialize(Opcodes opcode, size_t newres = 200)
         {
             clear();
             _storage.reserve(newres);
             m_opcode = opcode;
         }
 
-        uint16 GetOpcode() const { return m_opcode; }
-        void SetOpcode(uint16 opcode) { m_opcode = opcode; }
+        Opcodes GetOpcode() const { return m_opcode; }
+        void SetOpcode(Opcodes opcode) { m_opcode = opcode; }
+        void compress(Opcodes opcode);
 
+        void ReadByteMask(uint8& b)
+        {
+            b = readBit() ? 1 : 0;
+        }
+
+        void ReadByteSeq(uint8& b)
+        {
+            if (b != 0)
+                b ^= read<uint8>();
+        }
+
+        void WriteByteMask(uint8 b)
+        {
+            writeBit(b);
+        }
+
+        void WriteByteSeq(uint8 b)
+        {
+            if (b != 0)
+                append<uint8>(b ^ 1);
+        }
     protected:
-        uint16 m_opcode;
+        Opcodes m_opcode;
+        void _compress(void* dst, uint32 *dst_size, const void* src, int src_size);
 };
 #endif
 

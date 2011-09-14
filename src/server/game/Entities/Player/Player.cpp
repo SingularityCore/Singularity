@@ -19690,7 +19690,7 @@ bool Player::IsAffectedBySpellmod(SpellInfo const *spellInfo, SpellModifier *mod
 void Player::AddSpellMod(SpellModifier* mod, bool apply)
 {
     sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Player::AddSpellMod %d", mod->spellId);
-    uint16 Opcode = (mod->type == SPELLMOD_FLAT) ? SMSG_SET_FLAT_SPELL_MODIFIER : SMSG_SET_PCT_SPELL_MODIFIER;
+    Opcodes Opcode = (mod->type == SPELLMOD_FLAT) ? SMSG_SET_FLAT_SPELL_MODIFIER : SMSG_SET_PCT_SPELL_MODIFIER;
 
     int i = 0;
     flag96 _mask = 0;
@@ -23777,7 +23777,7 @@ void Player::AddKnownCurrency(uint32 itemId)
         SetFlag64(PLAYER_FIELD_KNOWN_CURRENCIES, (1LL << (ctEntry->BitIndex-1)));
 }
 
-void Player::UpdateFallInformationIfNeed(MovementInfo const& minfo, uint16 opcode)
+void Player::UpdateFallInformationIfNeed(MovementInfo const& minfo, Opcodes opcode)
 {
     if (m_lastFallTime >= minfo.fallTime || m_lastFallZ <= minfo.pos.GetPositionZ() || opcode == MSG_MOVE_FALL_LAND)
         SetFallInformation(minfo.fallTime, minfo.pos.GetPositionZ());

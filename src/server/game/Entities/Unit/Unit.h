@@ -34,7 +34,7 @@
 #include "DBCStructure.h"
 #include "SpellInfo.h"
 #include "Path.h"
-#include "WorldPacket.h"
+#include "Opcodes.h"
 #include "Timer.h"
 #include <list>
 
