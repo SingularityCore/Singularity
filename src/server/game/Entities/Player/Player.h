@@ -805,6 +805,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOADBANNED               = 28,
     PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW       = 29,
     PLAYER_LOGIN_QUERY_LOADINSTANCELOCKTIMES    = 30,
+    PLAYER_LOGIN_QUERY_LOADCURRENCY             = 31,
     MAX_PLAYER_LOGIN_QUERY,
 };
 
@@ -1098,7 +1099,7 @@ class Player : public Unit, public GridObject<Player>
 
         void Update(uint32 time);
 
-        static bool BuildEnumData(QueryResult result, WorldPacket* data);
+        static bool BuildEnumData(QueryResult result, ByteBuffer* data);
 
         void SetInWater(bool apply);
 

@@ -246,7 +246,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket & /*recv_data*/)
 {
-    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Recvd MSG_BATTLEGROUND_PLAYER_POSITIONS Message");
+    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Recvd CMSG_BATTLEGROUND_PLAYER_POSITIONS Message");
 
     Battleground *bg = _player->GetBattleground();
     if (!bg)                                                 // can't be received if player not in battleground
@@ -266,7 +266,7 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket & /*recv_
             if (hplr)
                 ++count;
 
-            WorldPacket data(MSG_BATTLEGROUND_PLAYER_POSITIONS, 4 + 4 + 16 * count);
+            WorldPacket data(SMSG_BATTLEGROUND_PLAYER_POSITIONS, 4 + 4 + 16 * count);
             data << 0;
             data << count;
             if (aplr)
@@ -292,7 +292,7 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket & /*recv_
         case BATTLEGROUND_AB:
         case BATTLEGROUND_AV:
         {
-            WorldPacket data(MSG_BATTLEGROUND_PLAYER_POSITIONS, (4+4));
+            WorldPacket data(SMSG_BATTLEGROUND_PLAYER_POSITIONS, (4+4));
             data << uint32(0);
             data << uint32(0);
             SendPacket(&data);

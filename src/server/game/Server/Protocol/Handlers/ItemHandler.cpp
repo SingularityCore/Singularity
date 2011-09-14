@@ -1019,11 +1019,11 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket & recv_data)
             if (ItemSetNameLocale const *isnl = sObjectMgr->GetItemSetNameLocale(itemid))
                 ObjectMgr::GetLocaleString(isnl->Name, loc_idx, Name);
 
-        WorldPacket data(SMSG_ITEM_NAME_QUERY_RESPONSE, (4+Name.size()+1+4));
+        /*WorldPacket data(SMSG_ITEM_NAME_QUERY_RESPONSE, (4+Name.size()+1+4));
         data << uint32(itemid);
         data << Name;
         data << uint32(pName->InventoryType);
-        SendPacket(&data);
+        SendPacket(&data);*/
     }
 }
 

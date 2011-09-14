@@ -288,7 +288,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recv_data)
     else
         _player->learnSpell(spellId, false);
 
-    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
+    WorldPacket data(SMSG_TRAINER_BUY_RESULT, 12);
     data << uint64(guid);
     data << uint32(spellId);                                // should be same as in packet from client
     SendPacket(&data);
@@ -488,7 +488,7 @@ void WorldSession::SendBindPoint(Creature *npc)
     // send spell for homebinding (3286)
     npc->CastSpell(_player, bindspell, true);
 
-    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, (8+4));
+    WorldPacket data(SMSG_TRAINER_BUY_RESULT, (8+4));
     data << uint64(npc->GetGUID());
     data << uint32(bindspell);
     SendPacket(&data);

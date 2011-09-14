@@ -423,7 +423,7 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( SMSG_LFG_UPDATE_PLAYER,                       STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_LFG_UPDATE_PARTY,                        STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( CMSG_LFG_SET_ROLES,                           STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleLfgSetRolesOpcode         );
-    DEFINE_OPCODE_HANDLER( CMSG_LFG_SET_BOOT_VOTE,                       STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleLfgSetBootVoteOpcode      );
+    DEFINE_OPCODE_HANDLER( CMSG_LFG_BOOT_PLAYER_VOTE,                    STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleLfgSetBootVoteOpcode      );
     DEFINE_OPCODE_HANDLER( CMSG_LFG_TELEPORT,                            STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleLfgTeleportOpcode         );
     DEFINE_OPCODE_HANDLER( CMSG_LFD_PARTY_LOCK_INFO_REQUEST,             STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleLfgPartyLockInfoRequestOpcode);
     DEFINE_OPCODE_HANDLER( SMSG_LFG_PARTY_INFO,                          STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
@@ -640,7 +640,7 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( SMSG_LFG_PLAYER_INFO,                         STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_LFG_ROLE_CHOSEN,                         STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_LFG_PROPOSAL_UPDATE,                     STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
-    DEFINE_OPCODE_HANDLER( SMSG_LFG_UPDATE_LIST,                         STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
+    DEFINE_OPCODE_HANDLER( SMSG_LFG_UPDATE_SEARCH,                       STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_AREA_TRIGGER_MESSAGE,                    STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_WORLD_STATE_UI_TIMER_UPDATE,             STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_SPIRIT_HEALER_CONFIRM,                   STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
@@ -674,6 +674,8 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( CMSG_SET_ACTIVE_MOVER,                        STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleSetActiveMoverOpcode      );
     DEFINE_OPCODE_HANDLER( CMSG_REQUEST_CATEGORY_COOLDOWNS,              STATUS_UNHANDLED,PROCESS_INPLACE,       &WorldSession::Handle_NULL                     );
     DEFINE_OPCODE_HANDLER( CMSG_LFG_GET_PLAYER_INFO,                     STATUS_UNHANDLED,PROCESS_INPLACE,       &WorldSession::Handle_NULL                     );
+    DEFINE_OPCODE_HANDLER( SMSG_RESPOND_INSPECT_ACHIEVEMENTS,            STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
+    DEFINE_OPCODE_HANDLER( SMSG_TOTEM_CREATED,                           STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
 
     // Chat
     DEFINE_OPCODE_HANDLER( CMSG_EMOTE,                                   STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleEmoteOpcode               );

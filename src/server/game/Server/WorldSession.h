@@ -30,6 +30,7 @@
 #include "DatabaseEnv.h"
 #include "World.h"
 #include "Opcodes.h"
+#include "WorldPacket.h"
 
 struct ItemTemplate;
 struct AuctionEntry;

@@ -15711,13 +15711,13 @@ void Unit::SetRooted(bool apply)
             data << m_rootTimes;
             SendMessageToSet(&data, true);
         }
-        else
+        /*else
         {
             WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 8);
             data.append(GetPackGUID());
             SendMessageToSet(&data, true);
             ToCreature()->StopMoving();
-        }
+        }*/
     }
     else
     {

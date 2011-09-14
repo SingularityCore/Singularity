@@ -237,7 +237,7 @@ enum Opcodes
     CMSG_LFG_JOIN                                    = 0x03EB2, // 14333
     CMSG_LFG_LEAVE                                   = 0x072A6, // 14333
     CMSG_LFG_PROPOSAL_RESULT                         = 0x0BAEA, // 14333
-    CMSG_LFG_SET_BOOT_VOTE                           = 0x0A6FB, // 14333
+    CMSG_LFG_BOOT_PLAYER_VOTE                        = 0x0A6FB, // 14480
     CMSG_LFG_SET_ROLES                               = 0x026F7, // 14333
     CMSG_LFG_TELEPORT                                = 0x0B673, // 14333
     CMSG_LIST_INVENTORY                              = 0x0EAFB, // 14333
@@ -753,7 +753,7 @@ enum Opcodes
     SMSG_LFG_ROLE_CHECK_UPDATE                       = 0x026A3, // 14333
     SMSG_LFG_ROLE_CHOSEN                             = 0x02AB7, // 14333
     SMSG_LFG_TELEPORT_DENIED                         = 0x0E6B3, // 14333
-    SMSG_LFG_UPDATE_LIST                             = 0x06673, // 14333
+    SMSG_LFG_UPDATE_SEARCH                           = 0x06673, // 14480
     SMSG_LFG_UPDATE_PARTY                            = 0x0666E, // 14333
     SMSG_LFG_UPDATE_PLAYER                           = 0x07A27, // 14333
     SMSG_LIST_INVENTORY                              = 0x0CB43, // 14333
@@ -857,6 +857,7 @@ enum Opcodes
     SMSG_POWER_UPDATE                                = 0x0B6BE, // 14333
     SMSG_PRE_RESURRECT                               = 0x026EE, // 14333
     SMSG_PROCRESIST                                  = 0x0BAE3, // 14333
+    SMSG_PROPOSE_LEVEL_GRANT                         = 0x06E6A, // 14480
     SMSG_PUREMOUNT_CANCELLED_OBSOLETE                = 0x100AE, //
     SMSG_PVP_CREDIT                                  = 0x0662B, // 14480
     SMSG_QUERY_QUESTS_COMPLETED_RESPONSE             = 0x07AFE, // 14333
@@ -880,7 +881,7 @@ enum Opcodes
     SMSG_QUEST_POI_QUERY_RESPONSE                    = 0x0663F, // 14333
     SMSG_QUEST_QUERY_RESPONSE                        = 0x0AEE3, // 14333
     SMSG_QUESTGIVER_QUEST_INVALID                    = 0x100B4, //
-    //SMSG_QUESTUPDATE_ADD_ITEM                        = 0x0727E, // 14480 must be checked. duplicate opcode.
+    //SMSG_QUESTUPDATE_ADD_ITEM_OBSOLETE               = 0x00000, // TODO: remove the complete handle of this opcode
     SMSG_RAID_GROUP_ONLY                             = 0x10111, //
     SMSG_RAID_INSTANCE_INFO                          = 0x066E2, // 14480
     SMSG_RAID_INSTANCE_MESSAGE                       = 0x06677, // 14333
@@ -894,6 +895,7 @@ enum Opcodes
     SMSG_REMOVED_SPELL                               = 0x07AF6, // 14333
     SMSG_REPORT_PVP_AFK_RESULT                       = 0x076AA, // 14333
     SMSG_REQUEST_CEMETERY_LIST_RESPONSE              = 0x09701,
+    SMSG_RESPOND_INSPECT_ACHIEVEMENTS                = 0x0CB63, // 
     SMSG_RESET_FAILED_NOTIFY                         = 0x101AA, //
     SMSG_RESISTLOG                                   = 0x100CE, //
     SMSG_RESURRECT_REQUEST                           = 0x0322E, // 14333
@@ -938,6 +940,7 @@ enum Opcodes
     SMSG_SPIRIT_HEALER_CONFIRM                       = 0x100ED, // 14333
     SMSG_SPLINE_MOVE_WATER_WALK                      = 0x10159, //
     SMSG_SPLINE_MOVE_LAND_WALK                       = 0x1015A, //
+    //SMSG_SPLINE_MOVE_ROOT                            = 0x00000, // TODO: Find value of this opcode
     SMSG_SPLINE_MOVE_UNROOT                          = 0x10154, //
     SMSG_STABLE_RESULT                               = 0x0EA36, // 14333
     SMSG_STANDSTATE_UPDATE                           = 0x0E2F6, // 14333
@@ -954,6 +957,7 @@ enum Opcodes
     SMSG_THREAT_UPDATE                               = 0x02E67, // 14480
     SMSG_TIME_SYNC_REQ                               = 0x04F21, // 14480
     SMSG_TITLE_EARNED                                = 0x0AEBA, // 14333
+    SMSG_TOTEM_CREATED                               = 0x07237,
     SMSG_TRADE_STATUS                                = 0x0DB61, // 14333
     SMSG_TRADE_STATUS_EXTENDED                       = 0x0DF27, // 14333
     SMSG_TRAINER_LIST                                = 0x06662, // 14333
