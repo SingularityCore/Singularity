@@ -2883,7 +2883,7 @@ void SpellMgr::LoadDbcDataCorrections()
 {
     uint32 oldMSTime = getMSTime();
 
-    SpellEntry* spellInfo = NULL;
+    SpellInfo* spellInfo = NULL;
     for (uint32 i = 0; i < sSpellStore.GetNumRows(); ++i)
     {
         spellInfo = (SpellEntry*)sSpellStore.LookupEntry(i);
@@ -2910,7 +2910,7 @@ void SpellMgr::LoadDbcDataCorrections()
             }
         }
 
-        if (spellInfo->activeIconID == 2158)  // flight
+        if (spellInfo->ActiveIconID == 2158)  // flight
             spellInfo->Attributes |= SPELL_ATTR0_PASSIVE;
 
         switch (spellInfo->Id)
