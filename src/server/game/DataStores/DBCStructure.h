@@ -1725,6 +1725,7 @@ struct SpellEffectEntry
     uint32 GetEffectRealPointsPerLevel() const { return EffectRealPointsPerLevel; }
     uint32 GetEffectRadiusIndex() const { return EffectRadiusIndex; }
     uint32 GetDmgMultiplier() const { return EffectDamageMultiplier; }
+    uint32 GetBonusMultiplier() const ( return EffectBonusCoefficient; )
     uint32 GetEffectMultipleValue() const { return EffectValueMultiplier; }
 };
 
@@ -1902,6 +1903,7 @@ struct SpellEntry
     uint32 GetEffectRealPointsPerLevel(uint32 eff) const;
     uint32 GetEffectRadiusIndex(uint32 eff) const;
     uint32 GetDmgMultiplier(uint32 eff) const;
+    uint32 GetBonusMultiplier(uint32 eff) const;
     uint32 GetEffectMultipleValue(uint32 eff) const;
     uint32 const* GetEffectSpellClassMask(uint32 eff) const;
 

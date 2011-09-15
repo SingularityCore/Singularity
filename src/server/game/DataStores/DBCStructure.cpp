@@ -105,6 +105,13 @@ uint32 SpellEntry::GetDmgMultiplier(uint32 eff) const
     return NULL;
 }
 
+uint32 SpellEntry::GetBonusMultiplier(uint32 eff) const
+{
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetBonusMultiplier();
+    return NULL;
+}
+
 uint32 SpellEntry::GetEffectMultipleValue(uint32 eff) const
 {
     if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))

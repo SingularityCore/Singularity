@@ -470,26 +470,26 @@ SpellEffectInfo::SpellEffectInfo(SpellEntry const* spellEntry, SpellInfo const* 
 {
     _spellInfo = spellInfo;
     _effIndex = effIndex;
-    Effect = spellEntry->Effect[effIndex];
-    ApplyAuraName = spellEntry->EffectApplyAuraName[effIndex];
-    Amplitude = spellEntry->EffectAmplitude[effIndex];
-    DieSides = spellEntry->EffectDieSides[effIndex];
-    RealPointsPerLevel = spellEntry->EffectRealPointsPerLevel[effIndex];
-    BasePoints = spellEntry->EffectBasePoints[effIndex];
-    PointsPerComboPoint = spellEntry->EffectPointsPerComboPoint[effIndex];
-    ValueMultiplier = spellEntry->EffectValueMultiplier[effIndex];
-    DamageMultiplier = spellEntry->EffectDamageMultiplier[effIndex];
-    BonusMultiplier = spellEntry->EffectBonusMultiplier[effIndex];
-    MiscValue = spellEntry->EffectMiscValue[effIndex];
-    MiscValueB = spellEntry->EffectMiscValueB[effIndex];
-    Mechanic = Mechanics(spellEntry->EffectMechanic[effIndex]);
-    TargetA = SpellImplicitTargetInfo(spellEntry->EffectImplicitTargetA[effIndex]);
-    TargetB = SpellImplicitTargetInfo(spellEntry->EffectImplicitTargetB[effIndex]);
-    RadiusEntry = spellEntry->EffectRadiusIndex[effIndex] ? sSpellRadiusStore.LookupEntry(spellEntry->EffectRadiusIndex[effIndex]) : NULL;
-    ChainTarget = spellEntry->EffectChainTarget[effIndex];
-    ItemType = spellEntry->EffectItemType[effIndex];
-    TriggerSpell = spellEntry->EffectTriggerSpell[effIndex];
-    SpellClassMask = spellEntry->EffectSpellClassMask[effIndex];
+    Effect = spellEntry->GetSpellEffectIdByIndex(effIndex);
+    ApplyAuraName = spellEntry->GetEffectApplyAuraNameByIndex(effIndex);
+    Amplitude = spellEntry->GetEffectAmplitude(effIndex);
+    DieSides = spellEntry->GetEffectDieSides(effIndex);
+    RealPointsPerLevel = spellEntry->GetEffectRealPointsPerLevel(effIndex);
+    BasePoints = spellEntry->GetSpellEffectBasePoints(effIndex);
+    PointsPerComboPoint = spellEntry->GetEffectPointsPerComboPoint(effIndex);
+    ValueMultiplier = spellEntry->GetEffectMultipleValue(effIndex);
+    DamageMultiplier = spellEntry->GetDmgMultiplier(effIndex);
+    BonusMultiplier = spellEntry->GetBonusMultiplier(effIndex);
+    MiscValue = spellEntry->GetEffectMiscValue(effIndex);
+    MiscValueB = spellEntry->GetEffectMiscValueB(effIndex);
+    Mechanic = Mechanics(spellEntry->GetSpellEffectMechanic(effIndex));
+    TargetA = SpellImplicitTargetInfo(spellEntry->GetEffectImplicitTargetAByIndex(effIndex));
+    TargetB = SpellImplicitTargetInfo(spellEntry->GetEffectImplicitTargetBByIndex(effIndex));
+    RadiusEntry = spellEntry->GetEffectRadiusIndex(effIndex) ? sSpellRadiusStore.LookupEntry(spellEntry->GetEffectRadiusIndex(effIndex)) : NULL;
+    ChainTarget = spellEntry->GetEffectChainTarget(effIndex);
+    ItemType = spellEntry->GetEffectItemType(effIndex);
+    TriggerSpell = spellEntry->GetEffectTriggerSpell(effIndex);
+    SpellClassMask = spellEntry->GetEffectSpellClassMask(effIndex);
 }
 
 bool SpellEffectInfo::IsEffect() const
@@ -1440,10 +1440,10 @@ SpellCastResult SpellInfo::CheckShapeshift(uint32 form) const
         return SPELL_CAST_OK;
 
     bool actAsShifted = false;
-    SpellShapeshiftEntry const* shapeInfo = NULL;
+    SpellShapeshiftFormEntry const* shapeInfo = NULL;
     if (form > 0)
     {
-        shapeInfo = sSpellShapeshiftStore.LookupEntry(form);
+        shapeInfo = sSpellShapeshiftFormStore.LookupEntry(form);
         if (!shapeInfo)
         {
             sLog->outError("GetErrorAtShapeshiftedCast: unknown shapeshift %u", form);
