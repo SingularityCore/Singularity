@@ -119,10 +119,10 @@ uint32 SpellEntry::GetEffectMultipleValue(uint32 eff) const
     return NULL;
 }
 
-uint32 const* SpellEntry::GetEffectSpellClassMask(uint32 eff) const
+uint32 SpellEntry::GetEffectSpellClassMask(uint32 eff) const
 {
     if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
-        return &effectEntry->EffectSpellClassMask[0];
+        return effectEntry->EffectSpellClassMask[eff];
     return NULL;
 }
 
@@ -391,6 +391,12 @@ uint32 SpellEntry::GetMaxAffectedTargets() const
 {
     SpellTargetRestrictionsEntry const* target = GetSpellTargetRestrictions();
     return target ? target->MaxAffectedTargets : 0;
+}
+
+uint32 SpellEntry::GetMaxTargetLevel() const
+{
+    SpellTargetRestrictionsEntry const* target = GetSpellTargetRestrictions();
+    return target ? target->MaxTargetLevel : 0;
 }
 //SpellAuraRestrictionsEntry
 uint32 SpellEntry::GetCasterAuraSpell() const

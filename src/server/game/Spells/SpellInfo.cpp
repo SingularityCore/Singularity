@@ -639,8 +639,8 @@ float SpellEffectInfo::CalcRadius(Unit* caster, Spell* spell) const
 {
     if (!HasRadius())
         return 0.0f;
-
-    float radius = RadiusEntry->radiusMax;
+    //TODO: FIX radius value
+    float radius = RadiusEntry->ID;
     if (Player* modOwner = (caster ? caster->GetSpellModOwner() : NULL))
         modOwner->ApplySpellMod(_spellInfo->Id, SPELLMOD_RADIUS, radius, spell);
 
@@ -934,9 +934,9 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     CasterAuraStateNot = spellEntry->GetCasterAuraStateNot();
     TargetAuraStateNot = spellEntry->GetTargetAuraStateNot();
     CasterAuraSpell = spellEntry->GetCasterAuraSpell();
-    TargetAuraSpell = spellEntry->GettargetAuraSpell();
-    ExcludeCasterAuraSpell = spellEntry->GetexcludeCasterAuraSpell();
-    ExcludeTargetAuraSpell = spellEntry->GetexcludeTargetAuraSpell();
+    TargetAuraSpell = spellEntry->GetTargetAuraSpell();
+    ExcludeCasterAuraSpell = spellEntry->GetExcludeCasterAuraSpell();
+    ExcludeTargetAuraSpell = spellEntry->GetExcludeTargetAuraSpell();
     CastTimeEntry = spellEntry->CastingTimeIndex ? sSpellCastTimesStore.LookupEntry(spellEntry->CastingTimeIndex) : NULL;
     RecoveryTime = spellEntry->GetRecoveryTime();
     CategoryRecoveryTime = spellEntry->GetCategoryRecoveryTime();
@@ -956,7 +956,7 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     ManaCost = spellEntry->GetManaCost();
     ManaCostPerlevel = spellEntry->GetManaCostPerLevel();
     ManaPerSecond = spellEntry->GetManaPerSecond();
-    ManaPerSecondPerLevel = spellEntry->manaPerSecondPerLevel;
+    ManaPerSecondPerLevel = spellEntry->GetManaPerSecond();
     ManaCostPercentage = spellEntry->GetManaCostPercentage();
     RuneCostID = spellEntry->runeCostID;
     RangeEntry = spellEntry->rangeIndex ? sSpellRangeStore.LookupEntry(spellEntry->rangeIndex) : NULL;
@@ -983,7 +983,7 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
         SpellName[i] = spellEntry->SpellName[i];
     for (uint8 i = 0; i < 16; ++i)
         Rank[i] = spellEntry->Rank[i];
-    MaxTargetLevel = spellEntry->MaxTargetLevel;
+    MaxTargetLevel = spellEntry->GetMaxTargetLevel();
     MaxAffectedTargets = spellEntry->GetMaxAffectedTargets();
     SpellFamilyName = spellEntry->GetSpellFamilyName();
     SpellFamilyFlags = spellEntry->GetSpellFamilyFlags();

@@ -99,11 +99,13 @@ DBCStorage <GlyphSlotEntry> sGlyphSlotStore(GlyphSlotfmt);
 
 DBCStorage <GtBarberShopCostBaseEntry>    sGtBarberShopCostBaseStore(GtBarberShopCostBasefmt);
 DBCStorage <GtCombatRatingsEntry>         sGtCombatRatingsStore(GtCombatRatingsfmt);
+DBCStorage <GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore(GtOCTClassCombatRatingScalarfmt);
+DBCStorage <GtChanceToSpellCritEntry>     sGtChanceToSpellCritStore(GtChanceToSpellCritfmt);
 DBCStorage <GtChanceToMeleeCritBaseEntry> sGtChanceToMeleeCritBaseStore(GtChanceToMeleeCritBasefmt);
 DBCStorage <GtChanceToMeleeCritEntry>     sGtChanceToMeleeCritStore(GtChanceToMeleeCritfmt);
 DBCStorage <GtChanceToSpellCritBaseEntry> sGtChanceToSpellCritBaseStore(GtChanceToSpellCritBasefmt);
-DBCStorage <GtChanceToSpellCritEntry>     sGtChanceToSpellCritStore(GtChanceToSpellCritfmt);
 //DBCStorage <GtOCTRegenMPEntry>            sGtOCTRegenMPStore(GtOCTRegenMPfmt);  -- not used currently
+DBCStorage <GtRegenHPPerSptEntry>         GtRegenHPPerSptEntryStore(GtRegenHPPerSptfmt);
 DBCStorage <gtOCTHpPerStaminaEntry>       gtOCTHpPerStaminaStore(gtOCTHpPerStaminafmt);
 DBCStorage <GtRegenMPPerSptEntry>         sGtRegenMPPerSptStore(GtRegenMPPerSptfmt);
 
@@ -127,7 +129,7 @@ DBCStorage <ItemDamageEntry>              sItemDamageTwoHandStore(ItemDamagefmt)
 DBCStorage <ItemDamageEntry>              sItemDamageTwoHandCasterStore(ItemDamagefmt);
 DBCStorage <ItemDamageEntry>              sItemDamageWandStore(ItemDamagefmt);
 //DBCStorage <ItemDisplayInfoEntry> sItemDisplayInfoStore(ItemDisplayTemplateEntryfmt); -- not used currently
-//DBCStorage <ItemExtendedCostEntry> sItemExtendedCostStore(ItemExtendedCostEntryfmt);
+DBCStorage <ItemExtendedCostEntry> sItemExtendedCostStore(ItemExtendedCostEntryfmt);
 DBCStorage <ItemLimitCategoryEntry> sItemLimitCategoryStore(ItemLimitCategoryEntryfmt);
 DBCStorage <ItemRandomPropertiesEntry> sItemRandomPropertiesStore(ItemRandomPropertiesfmt);
 DBCStorage <ItemRandomSuffixEntry> sItemRandomSuffixStore(ItemRandomSuffixfmt);
@@ -446,7 +448,7 @@ void LoadDBCStores(const std::string& dataPath)
 
         SpellEntry const* spellInfo = sSpellStore.LookupEntry(skillLine->spellId);
 
-        if (spellInfo && IsPassiveSpell(spellInfo->Id))
+        if (spellInfo && spellInfo->Attributes & SPELL_ATTR0_PASSIVE)
         {
             for (uint32 i = 1; i < sCreatureFamilyStore.GetNumRows(); ++i)
             {

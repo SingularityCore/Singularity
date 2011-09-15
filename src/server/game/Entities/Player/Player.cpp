@@ -1009,8 +1009,8 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     InitRunes();
 
     SetUInt32Value(PLAYER_FIELD_COINAGE, sWorld->getIntConfig(CONFIG_START_PLAYER_MONEY));
-    SetHonorPoints(sWorld->getIntConfig(CONFIG_START_HONOR_POINTS));
-    SetArenaPoints(sWorld->getIntConfig(CONFIG_START_ARENA_POINTS));
+    SetCurrency(CURRENCY_TYPE_HONOR_POINTS, sWorld->getIntConfig(CONFIG_START_HONOR_POINTS));
+    SetCurrency(CURRENCY_TYPE_JUSTICE_POINTS, sWorld->getIntConfig(CONFIG_START_JUSTICE_POINTS));
 
     // start with every map explored
     if (sWorld->getBoolConfig(CONFIG_START_ALL_EXPLORED))
@@ -5867,10 +5867,9 @@ float Player::OCTRegenHPPerSpirit()
 
     if (level > GT_MAX_LEVEL)
         level = GT_MAX_LEVEL;
-
-    GtOCTRegenHPEntry     const *baseRatio = sGtOCTRegenHPStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
+    
     GtRegenHPPerSptEntry  const *moreRatio = sGtRegenHPPerSptStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
-    if (baseRatio == NULL || moreRatio == NULL)
+    if (moreRatio == NULL)
         return 0.0f;
 
     // Formula from PaperDollFrame script
@@ -5879,7 +5878,7 @@ float Player::OCTRegenHPPerSpirit()
     if (baseSpirit > 50)
         baseSpirit = 50;
     float moreSpirit = spirit - baseSpirit;
-    float regen = baseSpirit * baseRatio->ratio + moreSpirit * moreRatio->ratio;
+    float regen = baseSpirit + moreSpirit * moreRatio->ratio;
     return regen;
 }
 
@@ -7222,7 +7221,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, int32 honor, bool pvpt
     GetSession()->SendPacket(&data);
 
     // add honor points
-    ModifyHonorPoints(honor);
+    ModifyCurrency(CURRENCY_TYPE_HONOR_POINTS, int32(honor));
 
     ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
 
@@ -7259,44 +7258,151 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, int32 honor, bool pvpt
     return true;
 }
 
-void Player::SetHonorPoints(uint32 value)
+void Player::SendCurrencies() const
 {
-    if (value > sWorld->getIntConfig(CONFIG_MAX_HONOR_POINTS))
-        value = sWorld->getIntConfig(CONFIG_MAX_HONOR_POINTS);
-    SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
-    if (value)
-        AddKnownCurrency(ITEM_HONOR_POINTS_ID);
+   WorldPacket packet(SMSG_INIT_CURRENCY, 4 + m_currencies.size()*(5*4 + 1));
+   packet << uint32(m_currencies.size());
+
+   for (PlayerCurrenciesMap::const_iterator itr = m_currencies.begin(); itr != m_currencies.end(); ++itr)
+   {
+       const CurrencyTypesEntry* entry = sCurrencyTypesStore.LookupEntry(itr->first);
+       packet << uint32(itr->second.weekCount / PLAYER_CURRENCY_PRECISION);
+       packet << uint8(0);                     // unknown
+       packet << uint32(entry->ID);
+       packet << uint32(sWorld->GetNextWeeklyQuestsResetTime() - 1*WEEK);
+       packet << uint32(_GetCurrencyWeekCap(entry) / PLAYER_CURRENCY_PRECISION);
+       packet << uint32(itr->second.totalCount / PLAYER_CURRENCY_PRECISION);
+   }
+
+   GetSession()->SendPacket(&packet);
 }
 
-void Player::SetArenaPoints(uint32 value)
+uint32 Player::GetCurrency(uint32 id) const
 {
-    if (value > sWorld->getIntConfig(CONFIG_MAX_ARENA_POINTS))
-        value = sWorld->getIntConfig(CONFIG_MAX_ARENA_POINTS);
-    SetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
-    if (value)
-        AddKnownCurrency(ITEM_ARENA_POINTS_ID);
+   PlayerCurrenciesMap::const_iterator itr = m_currencies.find(id);
+   return itr != m_currencies.end() ? itr->second.totalCount : 0;
 }
 
-void Player::ModifyHonorPoints(int32 value, SQLTransaction* trans /*=NULL*/)
+bool Player::HasCurrency(uint32 id, uint32 count) const
 {
-    int32 newValue = int32(GetHonorPoints()) + value;
-    if (newValue < 0)
-        newValue = 0;
-    SetHonorPoints(uint32(newValue));
-
-    if (trans && !trans->null())
-        (*trans)->PAppend("UPDATE characters SET totalHonorPoints=%u WHERE guid=%u", newValue, GetGUIDLow());
+   PlayerCurrenciesMap::const_iterator itr = m_currencies.find(id);
+   return itr != m_currencies.end() && itr->second.totalCount >= count;
 }
 
-void Player::ModifyArenaPoints(int32 value, SQLTransaction* trans /*=NULL*/)
+void Player::ModifyCurrency(uint32 id, int32 count)
 {
-    int32 newValue = int32(GetArenaPoints()) + value;
-    if (newValue < 0)
-        newValue = 0;
-    SetArenaPoints(uint32(newValue));
+   if (!count)
+       return;
 
-    if (trans && !trans->null())
-        (*trans)->PAppend("UPDATE characters SET arenaPoints=%u WHERE guid=%u", newValue, GetGUIDLow());
+   const CurrencyTypesEntry* currency = sCurrencyTypesStore.LookupEntry(id);
+   ASSERT(currency);
+
+   uint32 oldTotalCount = 0;
+   uint32 oldWeekCount = 0;
+   PlayerCurrenciesMap::iterator itr = m_currencies.find(id);
+   if (itr == m_currencies.end())
+   {
+       PlayerCurrency cur;
+       cur.state = PLAYERCURRENCY_NEW;
+       cur.totalCount = 0;
+       cur.weekCount = 0;
+       m_currencies[id] = cur;
+       itr = m_currencies.find(id);
+   }
+   else
+   {
+       oldTotalCount = itr->second.totalCount;
+       oldWeekCount = itr->second.weekCount;
+   }
+
+   int32 newTotalCount = int32(oldTotalCount) + count;
+   if (newTotalCount < 0)
+       newTotalCount = 0;
+
+   int32 newWeekCount = int32(oldWeekCount) + (count > 0 ? count : 0);
+   if (newWeekCount < 0)
+       newWeekCount = 0;
+
+   if (currency->TotalCap && int32(currency->TotalCap) < newTotalCount)
+   {
+       int32 delta = newTotalCount - int32(currency->TotalCap);
+       newTotalCount = int32(currency->TotalCap);
+       newWeekCount -= delta;
+   }
+
+   // TODO: fix conquest points
+   uint32 weekCap = _GetCurrencyWeekCap(currency);
+   if (weekCap && int32(weekCap) < newTotalCount)
+   {
+       int32 delta = newWeekCount - int32(weekCap);
+       newWeekCount = int32(weekCap);
+       newTotalCount -= delta;
+   }
+
+   // if we change total, we must change week
+   ASSERT(((newTotalCount-oldTotalCount) != 0) == ((newWeekCount-oldWeekCount) != 0));
+
+   if (newTotalCount != oldTotalCount)
+   {
+       if(itr->second.state != PLAYERCURRENCY_NEW)
+           itr->second.state = PLAYERCURRENCY_CHANGED;
+
+       itr->second.totalCount = newTotalCount;
+       itr->second.weekCount = newWeekCount;
+
+       // probably excessive checks
+       if (IsInWorld() && !GetSession()->PlayerLoading())
+       {
+           WorldPacket packet(SMSG_UPDATE_CURRENCY, 12);
+           packet << uint32(id);
+           packet << uint32(weekCap ? (newWeekCount / PLAYER_CURRENCY_PRECISION) : 0);
+           packet << uint32(newTotalCount / PLAYER_CURRENCY_PRECISION);
+           GetSession()->SendPacket(&packet);
+       }
+   }
+}
+
+void Player::SetCurrency(uint32 id, uint32 count)
+{
+   ModifyCurrency(id, int32(count) - GetCurrency(id));
+}
+
+uint32 Player::_GetCurrencyWeekCap(const CurrencyTypesEntry* currency) const
+{
+   uint32 cap = currency->WeekCap;
+   switch (currency->ID)
+   {
+       case CURRENCY_TYPE_CONQUEST_POINTS:
+       {
+           // TODO: implement
+           cap = 0;
+           break;
+       }
+       case CURRENCY_TYPE_HONOR_POINTS:
+       {
+           uint32 honorcap = sWorld->getIntConfig(CONFIG_MAX_HONOR_POINTS);
+           if (honorcap > 0)
+               cap = honorcap;
+           break;
+       }
+       case CURRENCY_TYPE_JUSTICE_POINTS:
+       {
+           uint32 justicecap = sWorld->getIntConfig(CONFIG_MAX_JUSTICE_POINTS);
+           if (justicecap > 0)
+               cap = justicecap;
+           break;
+       }
+   }
+
+   if (cap != currency->WeekCap && IsInWorld() && !GetSession()->PlayerLoading())
+   {
+       WorldPacket packet(SMSG_UPDATE_CURRENCY_WEEK_LIMIT, 8);
+       packet << uint32(cap / PLAYER_CURRENCY_PRECISION);
+       packet << uint32(currency->ID);
+       GetSession()->SendPacket(&packet);
+   }
+
+   return cap;
 }
 
 uint32 Player::GetGuildIdFromDB(uint64 guid)
@@ -14960,8 +15066,8 @@ void Player::RewardQuest(Quest const *pQuest, uint32 reward, Object* questGiver,
         InitTalentForLevel();
     }
 
-    if (pQuest->GetRewArenaPoints())
-        ModifyArenaPoints(pQuest->GetRewArenaPoints());
+    /*if (pQuest->GetRewArenaPoints())
+        ModifyArenaPoints(pQuest->GetRewArenaPoints());*/
 
     // Send reward mail
     if (uint32 mail_template_id = pQuest->GetRewMailTemplateId())
@@ -16621,8 +16727,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadArenaTeamInfo(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADARENAINFO));
 
-    SetArenaPoints(fields[39].GetUInt32());
-
     // check arena teams integrity
     for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
     {
@@ -16639,10 +16743,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
             SetArenaTeamInfoField(arena_slot, ArenaTeamInfoType(j), 0);
     }
 
-    SetHonorPoints(fields[40].GetUInt32());
-    SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, fields[41].GetUInt32());
-    SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, fields[42].GetUInt32());
-    SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, fields[43].GetUInt32());
+    SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 0);
     SetUInt16Value(PLAYER_FIELD_KILLS, 0, fields[44].GetUInt16());
     SetUInt16Value(PLAYER_FIELD_KILLS, 1, fields[45].GetUInt16());
 
@@ -16973,6 +17074,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         m_activeSpec = 0;
         sLog->outError("Player %s(GUID: %u) has SpecCount = %u and ActiveSpec = %u.", GetName(), GetGUIDLow(), m_specsCount, m_activeSpec);
     }
+
+    _LoadCurrency(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADCURRENCY));
 
     _LoadTalents(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADTALENTS));
     _LoadSpells(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSPELLS));
@@ -17841,6 +17944,43 @@ void Player::_LoadWeeklyQuestStatus(PreparedQueryResult result)
     m_WeeklyQuestChanged = false;
 }
 
+void Player::_LoadCurrency(PreparedQueryResult result)
+{
+   //         0          1       2
+   // "SELECT currency, `count`, thisweek FROM character_currency WHERE guid = '%u'"
+
+   if (result)
+   {
+       do
+       {
+           Field *fields = result->Fetch();
+
+           uint32 currency_id = fields[0].GetUInt32();
+           uint32 totalCount = fields[1].GetUInt32();
+           uint32 weekCount = fields[2].GetUInt32();
+
+           const CurrencyTypesEntry* entry = sCurrencyTypesStore.LookupEntry(currency_id);
+           if (!entry)
+           {
+               sLog->outError("Player::_LoadCurrency: %s has not existing currency %u, removing.", GetGUID(), currency_id);
+               CharacterDatabase.PExecute("DELETE FROM character_currency WHERE currency = '%u'", currency_id);
+               continue;
+           }
+
+           uint32 weekCap = _GetCurrencyWeekCap(entry);
+
+           PlayerCurrency cur;
+
+           cur.state = PLAYERCURRENCY_UNCHANGED;
+           cur.totalCount = totalCount > entry->TotalCap ? entry->TotalCap : totalCount;
+           cur.weekCount = weekCount > weekCap ? weekCap : weekCount;
+
+           m_currencies[currency_id] = cur;
+       }
+       while (result->NextRow());
+   }
+}
+
 void Player::_LoadSpells(PreparedQueryResult result)
 {
     //QueryResult *result = CharacterDatabase.PQuery("SELECT spell, active, disabled FROM character_spell WHERE guid = '%u'", GetGUIDLow());
@@ -18300,7 +18440,7 @@ void Player::SaveToDB()
         "taximask, online, cinematic, "
         "totaltime, leveltime, rest_bonus, logout_time, is_logout_resting, resettalents_cost, resettalents_time, "
         "trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, "
-        "death_expire_time, taxi_path, arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, "
+        "death_expire_time, taxi_path, totalKills, "
         "todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, health, power1, power2, power3, "
         "power4, power5, power6, power7, latency, speccount, activespec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, grantableLevels) VALUES ("
         << GetGUIDLow() << ','
@@ -18376,14 +18516,6 @@ void Player::SaveToDB()
 
     ss << m_taxi.SaveTaxiDestinationsToString() << "', ";
 
-    ss << GetArenaPoints() << ',';
-
-    ss << GetHonorPoints() << ',';
-
-    ss << GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION) << ',';
-
-    ss << GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION) << ',';
-
     ss << GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS) << ',';
 
     ss << GetUInt16Value(PLAYER_FIELD_KILLS, 0) << ',';
@@ -18391,8 +18523,6 @@ void Player::SaveToDB()
     ss << GetUInt16Value(PLAYER_FIELD_KILLS, 1) << ',';
 
     ss << GetUInt32Value(PLAYER_CHOSEN_TITLE) << ',';
-
-    ss << GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES) << ',';
 
     ss << GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX) << ',';
 
@@ -18451,6 +18581,7 @@ void Player::SaveToDB()
     _SaveDailyQuestStatus(trans);
     _SaveWeeklyQuestStatus(trans);
     _SaveTalents(trans);
+    _SaveCurrency(trans);
     _SaveSpells(trans);
     _SaveSpellCooldowns(trans);
     _SaveActions(trans);
@@ -18474,6 +18605,28 @@ void Player::SaveToDB()
     if (Pet* pet = GetPet())
         pet->SavePetToDB(PET_SAVE_AS_CURRENT);
 
+}
+
+void Player::_SaveCurrency(SQLTransaction& trans)
+{
+   for (PlayerCurrenciesMap::iterator itr = m_currencies.begin(); itr != m_currencies.end();)
+   {
+       if (itr->second.state == PLAYERCURRENCY_CHANGED)
+           CharacterDatabase.PExecute("UPDATE character_currency SET `count` = '%u', thisweek = '%u' WHERE guid = '%u' AND currency = '%u'",
+               itr->second.totalCount, itr->second.weekCount, GetGUIDLow(), itr->first);
+       else if (itr->second.state == PLAYERCURRENCY_NEW)
+           CharacterDatabase.PExecute("INSERT INTO character_currency (guid,currency,`count`,thisweek) VALUES ('%u','%u','%u','%u')",
+                GetGUIDLow(), itr->first, itr->second.totalCount, itr->second.weekCount);
+
+       if (itr->second.state == PLAYERCURRENCY_REMOVED)
+           m_currencies.erase(itr++);
+       else
+       {
+           itr->second.state = PLAYERCURRENCY_UNCHANGED;
+           ++itr;
+       }
+
+   }
 }
 
 // fast save function for item/money cheating preventing - save only inventory and money state
@@ -20353,19 +20506,19 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
 
     ModifyMoney(-price);
 
-    if (crItem->ExtendedCost)                            // case for new honor system
+    if (crItem->ExtendedCost) // case for new honor system
     {
         ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
-        if (iece->reqhonorpoints)
-            ModifyHonorPoints(- int32(iece->reqhonorpoints * count));
-
-        if (iece->reqarenapoints)
-            ModifyArenaPoints(- int32(iece->reqarenapoints * count));
-
-        for (uint8 i = 0; i < MAX_ITEM_EXTENDED_COST_REQUIREMENTS; ++i)
+        for (int i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
         {
             if (iece->reqitem[i])
-                DestroyItemCount(iece->reqitem[i], (iece->reqitemcount[i] * count), true);
+                DestroyItemCount(iece->reqitem[i], iece->reqitemcount[i], true);
+        }
+
+        for (int i = 0; i < MAX_ITEM_EXTENDED_COST_CURRENCIES; ++i)
+        {
+            if (iece->reqcurrency[i])
+                ModifyCurrency(iece->reqcurrency[i], -int32(iece->reqcurrencycount[i]));
         }
     }
 
@@ -20474,22 +20627,8 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
             return false;
         }
 
-        // honor points price
-        if (GetHonorPoints() < (iece->reqhonorpoints * count))
-        {
-            SendEquipError(EQUIP_ERR_NOT_ENOUGH_HONOR_POINTS, NULL, NULL);
-            return false;
-        }
-
-        // arena points price
-        if (GetArenaPoints() < (iece->reqarenapoints * count))
-        {
-            SendEquipError(EQUIP_ERR_NOT_ENOUGH_ARENA_POINTS, NULL, NULL);
-            return false;
-        }
-
         // item base price
-        for (uint8 i = 0; i < MAX_ITEM_EXTENDED_COST_REQUIREMENTS; ++i)
+        for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
         {
             if (iece->reqitem[i] && !HasItemCount(iece->reqitem[i], (iece->reqitemcount[i] * count)))
             {
@@ -21506,6 +21645,7 @@ void Player::SendInitialPacketsBeforeAddToMap()
     // SMSG_PET_GUIDS
     // SMSG_UPDATE_WORLD_STATE
     // SMSG_POWER_UPDATE
+    SendCurrencies();
 
 }
 
@@ -21916,6 +22056,9 @@ void Player::ResetWeeklyQuestStatus()
     m_weeklyquests.clear();
     // DB data deleted in caller
     m_WeeklyQuestChanged = false;
+
+    for (PlayerCurrenciesMap::iterator itr = m_currencies.begin(); itr != m_currencies.end(); ++itr)
+       itr->second.weekCount = 0;                  // no need to change state here as sWorld resets currencies in DB
 }
 
 Battleground* Player::GetBattleground() const
@@ -24542,10 +24685,8 @@ void Player::SendRefundInfo(Item *item)
 
     WorldPacket data(SMSG_ITEM_REFUND_INFO_RESPONSE, 8+4+4+4+4*4+4*4+4+4);
     data << uint64(item->GetGUID());                    // item guid
-    data << uint32(item->GetPaidMoney());               // money cost
-    data << uint32(iece->reqhonorpoints);               // honor point cost
-    data << uint32(iece->reqarenapoints);               // arena point cost
-    for (uint8 i = 0; i < MAX_ITEM_EXTENDED_COST_REQUIREMENTS; ++i)                       // item cost data
+    data << uint32(item->GetPaidMoney());               // money cost    
+    for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)                       // item cost data
     {
         data << uint32(iece->reqitem[i]);
         data << uint32(iece->reqitemcount[i]);
@@ -24611,7 +24752,7 @@ void Player::RefundItem(Item *item)
     }
 
     bool store_error = false;
-    for (uint8 i = 0; i < MAX_ITEM_EXTENDED_COST_REQUIREMENTS; ++i)
+    for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
     {
         uint32 count = iece->reqitemcount[i];
         uint32 itemid = iece->reqitem[i];
@@ -24641,9 +24782,7 @@ void Player::RefundItem(Item *item)
     data << uint64(item->GetGUID());                    // item guid
     data << uint32(0);                                  // 0, or error code
     data << uint32(item->GetPaidMoney());               // money cost
-    data << uint32(iece->reqhonorpoints);               // honor point cost
-    data << uint32(iece->reqarenapoints);               // arena point cost
-    for (uint8 i = 0; i < MAX_ITEM_EXTENDED_COST_REQUIREMENTS; ++i) // item cost data
+    for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i) // item cost data
     {
         data << uint32(iece->reqitem[i]);
         data << uint32(iece->reqitemcount[i]);
@@ -24662,7 +24801,7 @@ void Player::RefundItem(Item *item)
     DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
 
     // Grant back extendedcost items
-    for (uint8 i = 0; i < MAX_ITEM_EXTENDED_COST_REQUIREMENTS; ++i)
+    for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
     {
         uint32 count = iece->reqitemcount[i];
         uint32 itemid = iece->reqitem[i];
@@ -24680,13 +24819,13 @@ void Player::RefundItem(Item *item)
     if (moneyRefund)
         ModifyMoney(moneyRefund); // Saved in SaveInventoryAndGoldToDB
 
-    // Grant back Honor points
-    if (uint32 honorRefund = iece->reqhonorpoints)
-        ModifyHonorPoints(honorRefund, &trans);
+    //// Grant back Honor points
+    //if (uint32 honorRefund = iece->reqhonorpoints)
+    //    ModifyHonorPoints(honorRefund, &trans);
 
-    // Grant back Arena points
-    if (uint32 arenaRefund = iece->reqarenapoints)
-        ModifyArenaPoints(arenaRefund, &trans);
+    //// Grant back Arena points
+    //if (uint32 arenaRefund = iece->reqarenapoints)
+    //    ModifyArenaPoints(arenaRefund, &trans);
 
     SaveInventoryAndGoldToDB(trans);
 

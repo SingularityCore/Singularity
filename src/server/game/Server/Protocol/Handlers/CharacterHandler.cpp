@@ -196,7 +196,7 @@ bool LoginQueryHolder::Initialize()
     stmt->setUInt32(0, m_accountId);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOADINSTANCELOCKTIMES, stmt);
 
-    stmt = CharacterDatabase.GetPreparedStatement(CHAR_LOAD_CURRENCY);
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_LOAD_PLAYER_CURRENCY);
     stmt->setUInt32(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOADCURRENCY, stmt);
 

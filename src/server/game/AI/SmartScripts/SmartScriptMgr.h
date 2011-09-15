@@ -1325,16 +1325,16 @@ class SmartAIMgr
 
         bool IsItemValid(SmartScriptHolder const& e, uint32 entry)
         {
-            if (!sItemStore.LookupEntry(entry))
+            /*if (!sItemStore.LookupEntry(entry))
             {
                 sLog->outErrorDb("SmartAIMgr: Entry %d SourceType %u Event %u Action %u uses non-existent Item entry %u, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), entry);
                 return false;
-            }
+            }*/
             return true;
         }
-        /*inline bool IsConditionValid(SmartScriptHolder e, int32 t, int32 v1, int32 v2, int32 v3)
+        inline bool IsConditionValid(SmartScriptHolder e, int32 t, int32 v1, int32 v2, int32 v3)
         {
-            bool error = false;
+            /*bool error = false;
             if (t > 0 && v1 >= 0 && v2 >= 0 && v3 >= 0)
             {
                 Condition cond;
@@ -1350,8 +1350,8 @@ class SmartAIMgr
                 sLog->outErrorDb("SmartAIMgr: Entry %d SourceType %u Event %u Action %u uses invalid Condition, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
                 return false;
             }
-            return true;
-        }*/
+            return true;*/
+        }
 
         bool IsTextEmoteValid(SmartScriptHolder const& e, uint32 entry)
         {

@@ -1021,7 +1021,7 @@ void ObjectMgr::LoadEquipmentTemplates()
             if (!equipmentInfo.ItemEntry[i])
                 continue;
 
-           ItemEntry const *dbcItem = sItemStore.LookupEntry(equipmentInfo.ItemEntry[i]);
+           /*ItemEntry const *dbcItem = sItemStore.LookupEntry(equipmentInfo.ItemEntry[i]);
 
             if (!dbcItem)
             {
@@ -1044,7 +1044,7 @@ void ObjectMgr::LoadEquipmentTemplates()
                 sLog->outErrorDb("Item (entry=%u) in creature_equip_template.itemEntry%u for entry = %u is not equipable in a hand, forced to 0.",
                     equipmentInfo.ItemEntry[i], i+1, entry);
                 equipmentInfo.ItemEntry[i] = 0;
-            }
+            }*/
         }
 
         ++count;
@@ -2253,7 +2253,7 @@ void ObjectMgr::LoadItemTemplates()
 
         // Checks
 
-        ItemEntry const *dbcitem = sItemStore.LookupEntry(entry);
+        /*ItemEntry const *dbcitem = sItemStore.LookupEntry(entry);
 
         if (dbcitem)
         {
@@ -2297,7 +2297,7 @@ void ObjectMgr::LoadItemTemplates()
 
         }
         else
-            sLog->outErrorDb("Item (Entry: %u) does not exist in item.dbc! (not correct id?).", entry);
+            sLog->outErrorDb("Item (Entry: %u) does not exist in item.dbc! (not correct id?).", entry);*/
 
         if (itemTemplate.Class >= MAX_ITEM_CLASS)
         {
@@ -6710,7 +6710,7 @@ std::string ObjectMgr::GeneratePetName(uint32 entry)
     if (list0.empty() || list1.empty())
     {
         CreatureTemplate const *cinfo = GetCreatureTemplate(entry);
-        char* petname = GetPetName(cinfo->family, sWorld->GetDefaultDbcLocale());
+        const char* petname = GetPetName(cinfo->family, sWorld->GetDefaultDbcLocale());
         if (!petname)
             return cinfo->Name;
 

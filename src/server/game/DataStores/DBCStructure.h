@@ -263,6 +263,13 @@ struct AchievementCriteriaEntry
             uint32  teamrating;                             // 4
         } reach_team_rating;
 
+        // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_PERSONAL_RATING = 39
+        struct
+        {
+            uint32 teamtype; // 3 {2, 3, 5}
+            uint32 PersonalRating; // 4
+        } highest_personal_rating;
+
         // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL      = 40
         struct
         {
@@ -376,6 +383,13 @@ struct AchievementCriteriaEntry
             uint32  unused;                                 // 3
             uint32  count;                                  // 4
         } healing_done;
+
+        // ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS      = 56
+        struct
+        {
+            uint32  unused;
+            uint32  killCount;
+        } get_killing_blow;
 
         // ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM             = 57
         struct
@@ -629,7 +643,7 @@ struct BattlemasterListEntry
     int32   mapid[8];                                       // 1-8 mapid
     uint32  type;                                           // 9 (3 - BG, 4 - arena)
     //uint32 canJoinAsGroup;                                // 10 (0 or 1)
-    char*  name;                                         // 11
+    DBCString name;                                         // 11
     uint32 maxGroupSize;                                    // 12 maxGroupSize, used for checking if queue as group
     uint32 HolidayWorldStateId;                             // 13 new 3.1
     uint32 minLevel;                                        // 14, min level (sync with PvPDifficulty.dbc content)
@@ -1020,6 +1034,7 @@ struct GlyphSlotEntry
 
 // All Gt* DBC store data for 100 levels, some by 100 per class/race
 #define GT_MAX_LEVEL    100
+#define GT_MAX_RATING   32
 
 struct GtBarberShopCostBaseEntry
 {
@@ -1031,6 +1046,11 @@ struct GtCombatRatingsEntry
 {
     //uint32 level;
     float    ratio;
+};
+
+struct GtOCTClassCombatRatingScalarEntry
+{
+    float ratio;
 };
 
 struct GtChanceToMeleeCritBaseEntry
@@ -1055,20 +1075,15 @@ struct GtChanceToSpellCritEntry
     float    ratio;
 };
 
-//struct GtOCTRegenHPEntry
-//{
-//    float    ratio;
-//};
-
 struct GtOCTRegenMPEntry
 {
     float    ratio;
 };
 
-//struct GtRegenHPPerSptEntry
-//{
-//    float    ratio;
-//};
+struct GtRegenHPPerSptEntry
+{
+    float    ratio;
+};
 
 struct gtOCTHpPerStaminaEntry
 {
@@ -1196,13 +1211,21 @@ struct ItemDisplayInfoEntry
                                                             // 11       m_particleColorID
 };
 
-//struct ItemCondExtCostsEntry
-//{
-//    uint32      ID;
-//    uint32      condExtendedCost;                         // ItemTemplate::CondExtendedCost
-//    uint32      itemextendedcostentry;                    // ItemTemplate::ExtendedCost
-//    uint32      arenaseason;                              // arena season number(1-4)
-//};
+#define MAX_ITEM_EXT_COST_ITEMS         5
+#define MAX_ITEM_EXT_COST_CURRENCIES    5
+
+struct ItemCondExtCostsEntry
+{
+    //uint32    reqhonorpoints;                             // 1 required honor points
+    //uint32    reqarenapoints;                             // 2 required arena points
+    uint32      RequiredArenaSlot;                          // 4 arena slot restrictions (min slot value)
+    uint32      RequiredItem[MAX_ITEM_EXT_COST_ITEMS];      // 5-8 required item id
+    uint32      RequiredItemCount[MAX_ITEM_EXT_COST_ITEMS]; // 9-13 required count of 1st item
+    uint32      RequiredPersonalArenaRating;                // 14 required personal arena rating
+    //uint32                                                // 15
+    uint32      RequiredCurrency[MAX_ITEM_EXT_COST_CURRENCIES];      // 16-20
+    uint32      RequiredCurrencyCount[MAX_ITEM_EXT_COST_CURRENCIES]; // 21-25
+};
 
 // common struct for:
 // ItemDamageAmmo.dbc
@@ -1725,7 +1748,7 @@ struct SpellEffectEntry
     uint32 GetEffectRealPointsPerLevel() const { return EffectRealPointsPerLevel; }
     uint32 GetEffectRadiusIndex() const { return EffectRadiusIndex; }
     uint32 GetDmgMultiplier() const { return EffectDamageMultiplier; }
-    uint32 GetBonusMultiplier() const ( return EffectBonusCoefficient; )
+    uint32 GetBonusMultiplier() const { return EffectBonusCoefficient; }
     uint32 GetEffectMultipleValue() const { return EffectValueMultiplier; }
 };
 
@@ -1905,7 +1928,7 @@ struct SpellEntry
     uint32 GetDmgMultiplier(uint32 eff) const;
     uint32 GetBonusMultiplier(uint32 eff) const;
     uint32 GetEffectMultipleValue(uint32 eff) const;
-    uint32 const* GetEffectSpellClassMask(uint32 eff) const;
+    uint32 GetEffectSpellClassMask(uint32 eff) const;
 
     // struct access functions
     SpellAuraOptionsEntry const* GetSpellAuraOptions() const;
@@ -1948,6 +1971,7 @@ struct SpellEntry
     uint32 GetProcCharges() const;
     uint32 GetProcChance() const;
     uint32 GetMaxLevel() const;
+    uint32 GetMaxTargetLevel() const;
     uint32 GetManaPerSecond() const;
     uint32 GetRequiresSpellFocus() const;
     uint32 GetSpellEffectIdByIndex(uint32 index) const;

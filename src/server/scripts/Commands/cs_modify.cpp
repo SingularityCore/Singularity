@@ -25,6 +25,7 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ObjectMgr.h"
 #include "Chat.h"
+#include "Player.h"
 
 class modify_commandscript : public CommandScript
 {
@@ -52,9 +53,8 @@ public:
             { "spell",          SEC_MODERATOR,      false, &HandleModifySpellCommand,         "", NULL },
             { "tp",             SEC_MODERATOR,      false, &HandleModifyTalentCommand,        "", NULL },
             { "mount",          SEC_MODERATOR,      false, &HandleModifyMountCommand,         "", NULL },
-            { "honor",          SEC_MODERATOR,      false, &HandleModifyHonorCommand,         "", NULL },
+            { "currency",       SEC_MODERATOR,      false, &HandleModifyCurrencyCommand,      "", NULL },
             { "rep",            SEC_GAMEMASTER,     false, &HandleModifyRepCommand,           "", NULL },
-            { "arena",          SEC_MODERATOR,      false, &HandleModifyArenaCommand,         "", NULL },
             { "drunk",          SEC_MODERATOR,      false, &HandleModifyDrunkCommand,         "", NULL },
             { "standstate",     SEC_GAMEMASTER,     false, &HandleModifyStandStateCommand,    "", NULL },
             { "morph",          SEC_GAMEMASTER,     false, &HandleModifyMorphCommand,         "", NULL },
@@ -1093,7 +1093,7 @@ public:
         return true;
     }
 
-    static bool HandleModifyHonorCommand (ChatHandler* handler, const char* args)
+    static bool HandleModifyCurrencyCommand (ChatHandler* handler, const char* args)
     {
         if (!*args)
             return false;
@@ -1110,11 +1110,23 @@ public:
         if (handler->HasLowerSecurity(target, 0))
             return false;
 
-        int32 amount = (uint32)atoi(args);
+        char* currencyid_s = strtok((char*)args, " ");
+        char* amount_s = strtok(NULL, "");
+        if (!currencyid_s || !amount_s)
+            return false;
 
-        target->ModifyHonorPoints(amount);
+        int32 currencyid = (int32)atoi(currencyid_s);
+        int32 amount = (int32)atoi(amount_s);
+        if (!sCurrencyTypesStore.LookupEntry(uint32(currencyid)))
+        {
+            handler->PSendSysMessage("Currency %u does not exist.", currencyid);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
 
-        handler->PSendSysMessage(LANG_COMMAND_MODIFY_HONOR, handler->GetNameLink(target).c_str(), target->GetHonorPoints());
+        target->ModifyCurrency(uint32(currencyid), amount);
+        
+        handler->PSendSysMessage(LANG_COMMAND_MODIFY_HONOR, handler->GetNameLink(target).c_str(), target->GetCurrency(uint32(currencyid)));
 
         return true;
     }
@@ -1285,29 +1297,7 @@ public:
         handler->GetSession()->GetPlayer()->SetUInt32Value(UNIT_NPC_EMOTESTATE , anim_id);
 
         return true;
-    }
-
-    static bool HandleModifyArenaCommand(ChatHandler* handler, const char* args)
-    {
-        if (!*args)
-            return false;
-
-        Player* target = handler->getSelectedPlayer();
-        if (!target)
-        {
-            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        int32 amount = (uint32)atoi(args);
-
-        target->ModifyArenaPoints(amount);
-
-        handler->PSendSysMessage(LANG_COMMAND_MODIFY_ARENA, handler->GetNameLink(target).c_str(), target->GetArenaPoints());
-
-        return true;
-    }
+    }    
 
     static bool HandleModifyGenderCommand(ChatHandler* handler, const char* args)
     {

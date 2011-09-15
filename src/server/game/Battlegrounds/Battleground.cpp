@@ -149,7 +149,7 @@ Battleground::Battleground()
     m_IsRated           = false;
     m_BuffChange        = false;
     m_IsRandom          = false;
-    m_Name              = "";
+//    m_Name              = "";
     m_LevelMin          = 0;
     m_LevelMax          = 0;
     m_InBGFreeSlotQueue = false;
@@ -830,8 +830,8 @@ void Battleground::EndBattleground(uint32 winner)
             if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
             {
                 UpdatePlayerScore(plr, SCORE_BONUS_HONOR, GetBonusHonorFromKill(winner_kills));
-                if (CanAwardArenaPoints())
-                    plr->ModifyArenaPoints(winner_arena);
+                /*if (CanAwardArenaPoints())
+                    plr->ModifyArenaPoints(winner_arena);*/
                 if (!plr->GetRandomWinner())
                     plr->SetRandomWinner(true);
             }

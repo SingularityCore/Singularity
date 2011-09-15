@@ -338,7 +338,7 @@ class Battleground
 
         /* Battleground */
         // Get methods:
-        char const* GetName() const         { return m_Name; }
+        DBCString GetName()         { return m_Name; }
         BattlegroundTypeId GetTypeID(bool GetRandom = false) const { return GetRandom ? m_RandomTypeID : m_TypeID; }
         BattlegroundBracketId GetBracketId() const { return m_BracketId; }
         uint32 GetInstanceID() const        { return m_InstanceID; }
@@ -365,7 +365,7 @@ class Battleground
         bool IsRandom() const { return m_IsRandom; }
 
         // Set methods:
-        void SetName(char const* Name)      { m_Name = Name; }
+        void SetName(DBCString Name)      { m_Name = Name; }
         void SetTypeID(BattlegroundTypeId TypeID) { m_TypeID = TypeID; }
         void SetRandomTypeID(BattlegroundTypeId TypeID) { m_RandomTypeID = TypeID; }
         //here we can count minlevel and maxlevel for players
@@ -630,7 +630,7 @@ class Battleground
         bool   m_IsRated;                                   // is this battle rated?
         bool   m_PrematureCountDown;
         uint32 m_PrematureCountDownTimer;
-        char const *m_Name;
+        DBCString m_Name;
 
         /* Pre- and post-update hooks */
 

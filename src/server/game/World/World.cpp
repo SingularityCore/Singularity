@@ -801,25 +801,25 @@ void World::LoadConfigSettings(bool reload)
         m_int_configs[CONFIG_START_HONOR_POINTS] = m_int_configs[CONFIG_MAX_HONOR_POINTS];
     }
 
-    m_int_configs[CONFIG_MAX_ARENA_POINTS] = sConfig->GetIntDefault("MaxArenaPoints", 10000);
-    if (int32(m_int_configs[CONFIG_MAX_ARENA_POINTS]) < 0)
+    m_int_configs[CONFIG_MAX_JUSTICE_POINTS] = sConfig->GetIntDefault("MaxJusticePoints", 400000);
+    if (int32(m_int_configs[CONFIG_MAX_JUSTICE_POINTS]) < 0)
     {
-        sLog->outError("MaxArenaPoints (%i) can't be negative. Set to 0.", m_int_configs[CONFIG_MAX_ARENA_POINTS]);
-        m_int_configs[CONFIG_MAX_ARENA_POINTS] = 0;
+        sLog->outError("MaxArenaPoints (%i) can't be negative. Set to 0.", m_int_configs[CONFIG_MAX_JUSTICE_POINTS]);
+        m_int_configs[CONFIG_MAX_JUSTICE_POINTS] = 0;
     }
 
-    m_int_configs[CONFIG_START_ARENA_POINTS] = sConfig->GetIntDefault("StartArenaPoints", 0);
-    if (int32(m_int_configs[CONFIG_START_ARENA_POINTS]) < 0)
+    m_int_configs[CONFIG_START_JUSTICE_POINTS] = sConfig->GetIntDefault("StartArenaPoints", 0);
+    if (int32(m_int_configs[CONFIG_START_JUSTICE_POINTS]) < 0)
     {
         sLog->outError("StartArenaPoints (%i) must be in range 0..MaxArenaPoints(%u). Set to %u.",
-            m_int_configs[CONFIG_START_ARENA_POINTS], m_int_configs[CONFIG_MAX_ARENA_POINTS], 0);
-        m_int_configs[CONFIG_START_ARENA_POINTS] = 0;
+            m_int_configs[CONFIG_START_JUSTICE_POINTS], m_int_configs[CONFIG_START_JUSTICE_POINTS], 0);
+       m_int_configs[CONFIG_START_JUSTICE_POINTS] = 0;
     }
-    else if (m_int_configs[CONFIG_START_ARENA_POINTS] > m_int_configs[CONFIG_MAX_ARENA_POINTS])
+    else if (m_int_configs[CONFIG_START_JUSTICE_POINTS] > m_int_configs[CONFIG_START_JUSTICE_POINTS])
     {
         sLog->outError("StartArenaPoints (%i) must be in range 0..MaxArenaPoints(%u). Set to %u.",
-            m_int_configs[CONFIG_START_ARENA_POINTS], m_int_configs[CONFIG_MAX_ARENA_POINTS], m_int_configs[CONFIG_MAX_ARENA_POINTS]);
-        m_int_configs[CONFIG_START_ARENA_POINTS] = m_int_configs[CONFIG_MAX_ARENA_POINTS];
+            m_int_configs[CONFIG_START_JUSTICE_POINTS], m_int_configs[CONFIG_START_JUSTICE_POINTS], m_int_configs[CONFIG_START_JUSTICE_POINTS]);
+       m_int_configs[CONFIG_START_JUSTICE_POINTS] = m_int_configs[CONFIG_START_JUSTICE_POINTS];
     }
 
     m_int_configs[CONFIG_MAX_RECRUIT_A_FRIEND_BONUS_PLAYER_LEVEL] = sConfig->GetIntDefault("RecruitAFriend.MaxLevel", 60);
@@ -2715,6 +2715,7 @@ void World::SetPlayerSecurityLimit(AccountTypes _sec)
 void World::ResetWeeklyQuests()
 {
     CharacterDatabase.Execute("DELETE FROM character_queststatus_weekly");
+    CharacterDatabase.Execute("UPDATE character_currency SET thisweek = 0");
     for (SessionMap::const_iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
         if (itr->second->GetPlayer())
             itr->second->GetPlayer()->ResetWeeklyQuestStatus();

@@ -197,7 +197,7 @@ GroupQueueInfo * BattlegroundQueue::AddGroup(Player *leader, Group* grp, Battleg
         {
             if (Battleground* bg = sBattlegroundMgr->GetBattlegroundTemplate(ginfo->BgTypeId))
             {
-                char const* bgName = bg->GetName();
+                DBCString bgName = bg->GetName();
                 uint32 MinPlayers = bg->GetMinPlayersPerTeam();
                 uint32 qHorde = 0;
                 uint32 qAlliance = 0;

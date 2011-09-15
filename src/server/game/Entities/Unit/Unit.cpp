@@ -16709,7 +16709,7 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form)
     }
 
     uint32 modelid = 0;
-    SpellShapeshiftEntry const* formEntry = sSpellShapeshiftStore.LookupEntry(form);
+    SpellShapeshiftFormEntry const* formEntry = sSpellShapeshiftFormStore.LookupEntry(form);
     if (formEntry && formEntry->modelID_A)
     {
         // Take the alliance modelid as default

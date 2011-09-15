@@ -938,7 +938,7 @@ void AuraEffect::CalculateSpellMod()
 
                 m_spellmod->type = SpellModType(GetAuraType());    // SpellModType value == spell aura types
                 m_spellmod->spellId = GetId();
-                m_spellmod->mask = GetSpellInfo()->Effects[GetEffIndex()].SpellClassMask;
+//                m_spellmod->mask = GetSpellInfo()->Effects[GetEffIndex()].SpellClassMask;
                 m_spellmod->charges = GetBase()->GetCharges();
             }
             m_spellmod->value = GetAmount();
@@ -1272,9 +1272,10 @@ bool AuraEffect::IsAffectedOnSpell(SpellInfo const* spell) const
     if (spell->SpellFamilyName != m_spellInfo->SpellFamilyName)
         return false;
 
-    // Check EffectClassMask
-    if (m_spellInfo->Effects[m_effIndex].SpellClassMask & spell->SpellFamilyFlags)
-        return true;
+    //Todo: fix this check
+    //// Check EffectClassMask
+    //if (m_spellInfo->Effects[m_effIndex].SpellClassMask & spell->SpellFamilyFlags)
+    //    return true;
     return false;
 }
 
@@ -2139,7 +2140,7 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
 
     if (target->GetTypeId() == TYPEID_PLAYER)
     {
-        SpellShapeshiftEntry const* shapeInfo = sSpellShapeshiftStore.LookupEntry(form);
+        SpellShapeshiftFormEntry const* shapeInfo = sSpellShapeshiftFormStore.LookupEntry(form);
         // Learn spells for shapeshift form - no need to send action bars or add spells to spellbook
         for (uint8 i = 0; i<MAX_SHAPESHIFT_SPELLS; ++i)
         {
@@ -4608,14 +4609,14 @@ void AuraEffect::HandleNoReagentUseAura(AuraApplication const* aurApp, uint8 mod
     if (target->GetTypeId() != TYPEID_PLAYER)
         return;
 
-    flag96 mask;
-    Unit::AuraEffectList const& noReagent = target->GetAuraEffectsByType(SPELL_AURA_NO_REAGENT_USE);
-        for (Unit::AuraEffectList::const_iterator i = noReagent.begin(); i !=  noReagent.end(); ++i)
-            mask |= (*i)->m_spellInfo->Effects[(*i)->m_effIndex].SpellClassMask;
+    //flag96 mask;
+    //Unit::AuraEffectList const& noReagent = target->GetAuraEffectsByType(SPELL_AURA_NO_REAGENT_USE);
+    //    for (Unit::AuraEffectList::const_iterator i = noReagent.begin(); i !=  noReagent.end(); ++i)
+    //        mask |= (*i)->m_spellInfo->Effects[(*i)->m_effIndex].SpellClassMask;
 
-    target->SetUInt32Value(PLAYER_NO_REAGENT_COST_1  , mask[0]);
-    target->SetUInt32Value(PLAYER_NO_REAGENT_COST_1+1, mask[1]);
-    target->SetUInt32Value(PLAYER_NO_REAGENT_COST_1+2, mask[2]);
+    //target->SetUInt32Value(PLAYER_NO_REAGENT_COST_1  , mask[0]);
+    //target->SetUInt32Value(PLAYER_NO_REAGENT_COST_1+1, mask[1]);
+    //target->SetUInt32Value(PLAYER_NO_REAGENT_COST_1+2, mask[2]);
 }
 
 void AuraEffect::HandleAuraRetainComboPoints(AuraApplication const* aurApp, uint8 mode, bool apply) const
