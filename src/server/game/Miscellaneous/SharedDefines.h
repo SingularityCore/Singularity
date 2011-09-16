@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
  * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
@@ -27,11 +28,9 @@ enum SpellEffIndex
     EFFECT_0 = 0,
     EFFECT_1 = 1,
     EFFECT_2 = 2,
+    EFFECT_FIRST_FOUND = 254,
+    EFFECT_ALL = 255,
 };
-
-// used in script definitions
-#define EFFECT_FIRST_FOUND 254
-#define EFFECT_ALL 255
 
 // loot modes for creatures and gameobjects, bitmask!
 enum LootModes
@@ -53,41 +52,43 @@ enum Gender
 // Race value is index in ChrRaces.dbc
 enum Races
 {
-    RACE_HUMAN          = 1,
-    RACE_ORC            = 2,
-    RACE_DWARF          = 3,
-    RACE_NIGHTELF       = 4,
-    RACE_UNDEAD_PLAYER  = 5,
-    RACE_TAUREN         = 6,
-    RACE_GNOME          = 7,
-    RACE_TROLL          = 8,
-    //RACE_GOBLIN         = 9,
-    RACE_BLOODELF       = 10,
-    RACE_DRAENEI        = 11
-    //RACE_FEL_ORC        = 12,
-    //RACE_NAGA           = 13,
-    //RACE_BROKEN         = 14,
-    //RACE_SKELETON       = 15,
-    //RACE_VRYKUL         = 16,
-    //RACE_TUSKARR        = 17,
-    //RACE_FOREST_TROLL   = 18,
-    //RACE_TAUNKA         = 19,
+    RACE_HUMAN                = 1,
+    RACE_ORC                  = 2,
+    RACE_DWARF                = 3,
+    RACE_NIGHTELF             = 4,
+    RACE_UNDEAD_PLAYER        = 5,
+    RACE_TAUREN               = 6,
+    RACE_GNOME                = 7,
+    RACE_TROLL                = 8,
+    RACE_GOBLIN               = 9,
+    RACE_BLOODELF             = 10,
+    RACE_DRAENEI              = 11,
+    //RACE_FEL_ORC            = 12,
+    //RACE_NAGA               = 13,
+    //RACE_BROKEN             = 14,
+    //RACE_SKELETON           = 15,
+    //RACE_VRYKUL             = 16,
+    //RACE_TUSKARR            = 17,
+    //RACE_FOREST_TROLL       = 18,
+    //RACE_TAUNKA             = 19,
     //RACE_NORTHREND_SKELETON = 20,
-    //RACE_ICE_TROLL      = 21
+    //RACE_ICE_TROLL          = 21,
+    RACE_WORGEN               = 22,
+    RACE_GILNEAN              = 23
 };
 
 // max+1 for player race
-#define MAX_RACES         12
+#define MAX_RACES         24
 
 #define RACEMASK_ALL_PLAYABLE \
     ((1<<(RACE_HUMAN-1))   |(1<<(RACE_ORC-1))          |(1<<(RACE_DWARF-1))   | \
     (1<<(RACE_NIGHTELF-1))|(1<<(RACE_UNDEAD_PLAYER-1))|(1<<(RACE_TAUREN-1))  | \
     (1<<(RACE_GNOME-1))   |(1<<(RACE_TROLL-1))        |(1<<(RACE_BLOODELF-1))| \
-    (1<<(RACE_DRAENEI-1)))
+    (1<<(RACE_DRAENEI-1))   |(1<<(RACE_GOBLIN-1))   |(1<<(RACE_WORGEN-1))   |(1<<(RACE_GILNEAN-1)))
 
 #define RACEMASK_ALLIANCE \
     ((1<<(RACE_HUMAN-1)) | (1<<(RACE_DWARF-1)) | (1<<(RACE_NIGHTELF-1)) | \
-    (1<<(RACE_GNOME-1)) | (1<<(RACE_DRAENEI-1)))
+    (1<<(RACE_GNOME-1))     |(1<<(RACE_DRAENEI-1))  |(1<<(RACE_WORGEN-1))   |(1<<(RACE_GILNEAN-1)))
 
 #define RACEMASK_HORDE RACEMASK_ALL_PLAYABLE & ~RACEMASK_ALLIANCE
 
@@ -630,10 +631,12 @@ enum Language
     LANG_ZOMBIE         = 36,
     LANG_GNOMISH_BINARY = 37,
     LANG_GOBLIN_BINARY  = 38,
+    LANG_WORGEN         = 39,
+    LANG_GOBLIN         = 40,
     LANG_ADDON          = 0xFFFFFFFF                        // used by addons, in 2.4.0 not exist, replaced by messagetype?
 };
 
-#define LANGUAGES_COUNT   19
+#define LANGUAGES_COUNT   21
 
 enum TeamId
 {
@@ -2563,10 +2566,25 @@ enum SkillType
     SKILL_PET_WASP                 = 785,
     SKILL_PET_EXOTIC_RHINO         = 786,
     SKILL_PET_EXOTIC_CORE_HOUND    = 787,
-    SKILL_PET_EXOTIC_SPIRIT_BEAST  = 788
+    SKILL_PET_EXOTIC_SPIRIT_BEAST  = 788,
+    SKILL_RACIAL_WORGEN            = 789,
+    SKILL_RACIAL_GOBLIN            = 790,
+    SKILL_LANG_WORGEN              = 791,
+    SKILL_LANG_GOBLIN              = 792,
+    SKILL_ARCHAEOLOGY              = 794,
+    SKILL_GENERAL_HUNTER           = 795,
+    SKILL_GENERAL_DEATHKNIGHT      = 796,
+    SKILL_GENERAL_ROGUE            = 797,
+    SKILL_GENERAL_DRUID            = 798,
+    SKILL_GENERAL_MAGE             = 799,
+    SKILL_GENERAL_PALADIN          = 800,
+    SKILL_GENERAL_SHAMAN           = 801,
+    SKILL_GENERAL_WARLOCK          = 802,
+    SKILL_GENERAL_WARRIOR          = 803,
+    SKILL_GENERAL_PRIEST           = 804
 };
 
-#define MAX_SKILL_TYPE               789
+#define MAX_SKILL_TYPE               805
 
 inline SkillType SkillByLockType(LockType locktype)
 {
@@ -2763,7 +2781,7 @@ enum PetDiet
 
 #define MAX_PET_DIET 9
 
-#define CHAIN_SPELL_JUMP_RADIUS 8
+#define CHAIN_SPELL_JUMP_RADIUS 10
 
 #define GUILD_BANKLOG_MAX_RECORDS   25
 #define GUILD_EVENTLOG_MAX_RECORDS  100
