@@ -1259,7 +1259,7 @@ void World::SetInitialWorldSettings()
     sSpellMgr->LoadDbcDataCorrections();
 
     sLog->outString("Loading SpellInfo store...");
-    sSpellMgr->LoadSpellInfoStore();
+    //sSpellMgr->LoadSpellInfoStore();
 
     sLog->outString("Loading spell custom attributes...");
     sSpellMgr->LoadSpellCustomAttr();
@@ -1756,17 +1756,17 @@ void World::DetectDBCLang()
 
     std::string availableLocalsStr;
 
-    uint8 default_locale = TOTAL_LOCALES;
-    for (uint8 i = default_locale-1; i < TOTAL_LOCALES; --i)  // -1 will be 255 due to uint8
-    {
-        if (race->name[i][0] != '\0')                     // check by race names
-        {
-            default_locale = i;
-            m_availableDbcLocaleMask |= (1 << i);
-            availableLocalsStr += localeNames[i];
-            availableLocalsStr += " ";
-        }
-    }
+    uint8 default_locale = 0;
+    //for (uint8 i = default_locale; i < TOTAL_LOCALES; ++i)  // -1 will be 255 due to uint8
+    //{
+    //    if (race->name[i][0] != '\0')                     // check by race names
+    //    {
+    //        default_locale = i;
+    //        m_availableDbcLocaleMask |= (1 << i);
+    //        availableLocalsStr += localeNames[i];
+    //        availableLocalsStr += " ";
+    //    }
+    //}
 
     if (default_locale != m_lang_confid && m_lang_confid < TOTAL_LOCALES &&
         (m_availableDbcLocaleMask & (1 << m_lang_confid)))
