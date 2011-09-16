@@ -2586,7 +2586,7 @@ void Player::Regenerate(Powers power)
     if (m_regenTimerCount >= 2000)
         SetPower(power, curValue);
     else
-        UpdateUInt32Value(UNIT_FIELD_POWER1 + power, curValue);
+        UpdateUInt32Value(UNIT_FIELD_POWER1 + GetPowerIndexByClass(power, getClass()), curValue);
 }
 
 void Player::RegenerateHealth()
@@ -3245,8 +3245,21 @@ void Player::InitStatsForLevel(bool reapplyMods)
     InitDataForForm(reapplyMods);
 
     // save new stats
-    for (uint8 i = POWER_MANA; i < MAX_POWERS; ++i)
-        SetMaxPower(Powers(i),  uint32(GetCreatePowers(Powers(i))));
+    for (uint32 i = 0; i <= sChrPowerTypesStore.GetNumRows(); i++)
+    {
+        ChrPowerTypesEntry const* cEntry = sChrPowerTypesStore.LookupEntry(i);
+
+        if (!cEntry)
+            continue;
+
+        if (getClass() != cEntry->classId)
+            continue;
+
+        if (cEntry->power == 10)
+            continue;
+
+        SetMaxPower(Powers(cEntry->power),  uint32(GetCreatePowers(Powers(cEntry->power))));
+    }
 
     SetMaxHealth(classInfo.basehealth);                     // stamina bonus will applied later
 

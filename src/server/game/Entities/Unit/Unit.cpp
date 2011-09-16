@@ -13567,18 +13567,15 @@ void Unit::SetMaxHealth(uint32 val)
 
 void Unit::SetPower(Powers power, uint32 val)
 {
-    if (GetPower(power) == val)
-        return;
-
     uint32 maxPower = GetMaxPower(power);
     if (maxPower < val)
         val = maxPower;
 
-    SetStatInt32Value(UNIT_FIELD_POWER1 + power, val);
+    SetStatInt32Value(UNIT_FIELD_POWER1 + GetPowerIndexByClass(power, getClass()), val);
 
     WorldPacket data(SMSG_POWER_UPDATE);
     data.append(GetPackGUID());
-    data << uint8(power);
+    data << uint8(GetPowerIndexByClass(power, getClass()));
     data << uint32(val);
     SendMessageToSet(&data, GetTypeId() == TYPEID_PLAYER ? true : false);
 
@@ -13606,7 +13603,7 @@ void Unit::SetPower(Powers power, uint32 val)
 void Unit::SetMaxPower(Powers power, uint32 val)
 {
     uint32 cur_power = GetPower(power);
-    SetStatInt32Value(UNIT_FIELD_MAXPOWER1 + power, val);
+    SetStatInt32Value(UNIT_FIELD_MAXPOWER1 + GetPowerIndexByClass(power, getClass()), val);
 
     // group update
     if (GetTypeId() == TYPEID_PLAYER)
