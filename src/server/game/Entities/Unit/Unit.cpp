@@ -156,7 +156,7 @@ m_vehicleKit(NULL), m_unitTypeMask(UNIT_MASK_NONE), m_HostileRefManager(this)
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
 
-    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
+    m_updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
 
     m_attackTimer[BASE_ATTACK] = 0;
     m_attackTimer[OFF_ATTACK] = 0;
@@ -680,7 +680,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     }
 
     // Rage from Damage made (only from direct weapon damage)
-    if (cleanDamage && damagetype == DIRECT_DAMAGE && this != victim && getPowerType() == POWER_RAGE)
+    if (cleanDamage && damagetype == DIRECT_DAMAGE && this != victim && getPowerType() == xPower_RAGE)
     {
         uint32 weaponSpeedHitFactor;
         uint32 rage_damage = damage + cleanDamage->absorbed_damage;
@@ -717,7 +717,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     if (!damage)
     {
         // Rage from absorbed damage
-        if (cleanDamage && cleanDamage->absorbed_damage && victim->getPowerType() == POWER_RAGE)
+        if (cleanDamage && cleanDamage->absorbed_damage && victim->getPowerType() == xPower_RAGE)
             victim->RewardRage(cleanDamage->absorbed_damage, 0, false);
 
         return 0;
@@ -803,7 +803,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         }
 
         // Rage from damage received
-        if (this != victim && victim->getPowerType() == POWER_RAGE)
+        if (this != victim && victim->getPowerType() == xPower_RAGE)
         {
             uint32 rage_damage = damage + (cleanDamage ? cleanDamage->absorbed_damage : 0);
             victim->RewardRage(rage_damage, 0, false);
@@ -1788,7 +1788,7 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
         if (float manaMultiplier = absorbAurEff->GetSpellInfo()->Effects[absorbAurEff->GetEffIndex()].CalcValueMultiplier(absorbAurEff->GetCaster()))
             manaReduction = int32(float(manaReduction) * manaMultiplier);
 
-        int32 manaTaken = -victim->ModifyPower(POWER_MANA, -manaReduction);
+        int32 manaTaken = -victim->ModifyPower(xPower_MANA, -manaReduction);
 
         // take case when mana has ended up into account
         currentAbsorb = currentAbsorb ? int32(float(currentAbsorb) * (float(manaTaken) / float(manaReduction))) : 0;
@@ -5640,11 +5640,11 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
             // Magic Absorption
             if (dummySpell->SpellIconID == 459)             // only this spell have SpellIconID == 459 and dummy aura
             {
-                if (getPowerType() != POWER_MANA)
+                if (getPowerType() != xPower_MANA)
                     return false;
 
                 // mana reward
-                basepoints0 = CalculatePctN(int32(GetMaxPower(POWER_MANA)), triggerAmount);
+                basepoints0 = CalculatePctN(int32(GetMaxPower(xPower_MANA)), triggerAmount);
                 target = this;
                 triggered_spell_id = 29442;
                 break;
@@ -6243,7 +6243,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                         return false;
 
                     int32 mana_perc = triggeredByAura->GetSpellInfo()->Effects[triggeredByAura->GetEffIndex()].CalcValue();
-                    basepoints0 = int32(CalculatePctN(GetCreatePowers(POWER_MANA), mana_perc) / 10);
+                    basepoints0 = int32(CalculatePctN(GetCreatePowers(xPower_MANA), mana_perc) / 10);
                     triggered_spell_id = 54833;
                     target = this;
                     break;
@@ -6740,7 +6740,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 // Judgement of Wisdom
                 case 20186:
                 {
-                    if (victim && victim->isAlive() && victim->getPowerType() == POWER_MANA)
+                    if (victim && victim->isAlive() && victim->getPowerType() == xPower_MANA)
                     {
                         // 2% of base mana
                         basepoints0 = int32(CalculatePctN(victim->GetCreateMana(), 2));
@@ -6785,7 +6785,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     target = this;
                     switch (target->getPowerType())
                     {
-                        case POWER_MANA:
+                        case xPower_MANA:
                             triggered_spell_id = 57319;
                             break;
                         default:
@@ -6941,16 +6941,16 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 {
                     switch (getPowerType())
                     {
-                        case POWER_MANA:
+                        case xPower_MANA:
                             triggered_spell_id = 71881;
                             break;
-                        case POWER_RAGE:
+                        case xPower_RAGE:
                             triggered_spell_id = 71883;
                             break;
-                        case POWER_ENERGY:
+                        case xPower_ENERGY:
                             triggered_spell_id = 71882;
                             break;
-                        case POWER_RUNIC_POWER:
+                        case xPower_RUNIC:
                             triggered_spell_id = 71884;
                             break;
                         default:
@@ -6963,16 +6963,16 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 {
                     switch (getPowerType())
                     {
-                        case POWER_MANA:
+                        case xPower_MANA:
                             triggered_spell_id = 71888;
                             break;
-                        case POWER_RAGE:
+                        case xPower_RAGE:
                             triggered_spell_id = 71886;
                             break;
-                        case POWER_ENERGY:
+                        case xPower_ENERGY:
                             triggered_spell_id = 71887;
                             break;
-                        case POWER_RUNIC_POWER:
+                        case xPower_RUNIC:
                             triggered_spell_id = 71885;
                             break;
                         default:
@@ -7811,7 +7811,7 @@ bool Unit::HandleObsModEnergyAuraProc(Unit* victim, uint32 /*damage*/, AuraEffec
             // Aspect of the Viper
             if (dummySpell->SpellFamilyFlags[1] & 0x40000)
             {
-                uint32 maxmana = GetMaxPower(POWER_MANA);
+                uint32 maxmana = GetMaxPower(xPower_MANA);
                 basepoints0 = CalculatePctF(maxmana, GetAttackTime(RANGED_ATTACK) / 1000.0f);
                 target = this;
                 triggered_spell_id = 34075;
@@ -7866,7 +7866,7 @@ bool Unit::HandleModDamagePctTakenAuraProc(Unit* victim, uint32 /*damage*/, Aura
             {
                 switch (getPowerType())
                 {
-                    case POWER_MANA:   triggered_spell_id = 57319; break;
+                    case xPower_MANA:   triggered_spell_id = 57319; break;
                     default:
                         return false;
                 }
@@ -8283,7 +8283,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                         if ((*i)->GetMiscValue() == SPELLMOD_CHANCE_OF_SUCCESS && (*i)->GetSpellInfo()->SpellIconID == 113)
                         {
                             int32 value2 = CalculateSpellDamage(this, (*i)->GetSpellInfo(), 2);
-                            basepoints0 = int32(CalculatePctN(GetMaxPower(POWER_MANA), value2));
+                            basepoints0 = int32(CalculatePctN(GetMaxPower(xPower_MANA), value2));
                             // Drain Soul
                             CastCustomSpell(this, 18371, &basepoints0, NULL, NULL, true, castItem, triggeredByAura);
                             break;
@@ -8905,7 +8905,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
         // Enlightenment (trigger only from mana cost spells)
         case 35095:
         {
-            if (!procSpell || procSpell->PowerType != POWER_MANA || (procSpell->ManaCost == 0 && procSpell->ManaCostPercentage == 0 && procSpell->ManaCostPerlevel == 0))
+            if (!procSpell || procSpell->PowerType != xPower_MANA || (procSpell->ManaCost == 0 && procSpell->ManaCostPercentage == 0 && procSpell->ManaCostPerlevel == 0))
                 return false;
             break;
         }
@@ -9116,9 +9116,9 @@ bool Unit::HandleOverrideClassScriptAuraProc(Unit* victim, uint32 /*damage*/, Au
 
             switch (victim->getPowerType())
             {
-                case POWER_MANA:   triggered_spell_id = 28722; break;
-                case POWER_RAGE:   triggered_spell_id = 28723; break;
-                case POWER_ENERGY: triggered_spell_id = 28724; break;
+                case xPower_MANA:   triggered_spell_id = 28722; break;
+                case xPower_RAGE:   triggered_spell_id = 28723; break;
+                case xPower_ENERGY: triggered_spell_id = 28724; break;
                 default:
                     return false;
             }
@@ -9138,10 +9138,10 @@ bool Unit::HandleOverrideClassScriptAuraProc(Unit* victim, uint32 /*damage*/, Au
                 return false;
             switch(victim->getPowerType())
             {
-                case POWER_MANA:   triggered_spell_id = 48542; break;
-                case POWER_RAGE:   triggered_spell_id = 48541; break;
-                case POWER_ENERGY: triggered_spell_id = 48540; break;
-                case POWER_RUNIC_POWER: triggered_spell_id = 48543; break;
+                case xPower_MANA:   triggered_spell_id = 48542; break;
+                case xPower_RAGE:   triggered_spell_id = 48541; break;
+                case xPower_ENERGY: triggered_spell_id = 48540; break;
+                case xPower_RUNIC: triggered_spell_id = 48543; break;
                 default:
                     break;
             }
@@ -9197,22 +9197,18 @@ void Unit::setPowerType(Powers new_powertype)
     switch(new_powertype)
     {
         default:
-        case POWER_MANA:
+        case xPower_MANA:
             break;
-        case POWER_RAGE:
-            SetMaxPower(POWER_RAGE, GetCreatePowers(POWER_RAGE));
-            SetPower(POWER_RAGE, 0);
+        case xPower_RAGE:
+            SetMaxPower(xPower_RAGE, GetCreatePowers(xPower_RAGE));
+            SetPower(xPower_RAGE, 0);
             break;
-        case POWER_FOCUS:
-            SetMaxPower(POWER_FOCUS, GetCreatePowers(POWER_FOCUS));
-            SetPower(POWER_FOCUS, GetCreatePowers(POWER_FOCUS));
+        case xPower_FOCUS:
+            SetMaxPower(xPower_FOCUS, GetCreatePowers(xPower_FOCUS));
+            SetPower(xPower_FOCUS, GetCreatePowers(xPower_FOCUS));
             break;
-        case POWER_ENERGY:
-            SetMaxPower(POWER_ENERGY, GetCreatePowers(POWER_ENERGY));
-            break;
-        case POWER_HAPPINESS:
-            SetMaxPower(POWER_HAPPINESS, GetCreatePowers(POWER_HAPPINESS));
-            SetPower(POWER_HAPPINESS, GetCreatePowers(POWER_HAPPINESS));
+        case xPower_ENERGY:
+            SetMaxPower(xPower_ENERGY, GetCreatePowers(xPower_ENERGY));
             break;
     }
 }
@@ -9906,7 +9902,7 @@ void Unit::SetMinion(Minion *minion, bool apply)
 
         // Ghoul pets have energy instead of mana (is anywhere better place for this code?)
         if (minion->IsPetGhoul())
-            minion->setPowerType(POWER_ENERGY);
+            minion->setPowerType(xPower_ENERGY);
 
         if (GetTypeId() == TYPEID_PLAYER)
         {
@@ -13459,14 +13455,13 @@ Powers Unit::GetPowerTypeByAuraGroup(UnitMods unitMod) const
 {
     switch (unitMod)
     {
-        case UNIT_MOD_RAGE:        return POWER_RAGE;
-        case UNIT_MOD_FOCUS:       return POWER_FOCUS;
-        case UNIT_MOD_ENERGY:      return POWER_ENERGY;
-        case UNIT_MOD_HAPPINESS:   return POWER_HAPPINESS;
-        case UNIT_MOD_RUNE:        return POWER_RUNE;
-        case UNIT_MOD_RUNIC_POWER: return POWER_RUNIC_POWER;
+        case UNIT_MOD_RAGE:        return xPower_RAGE;
+        case UNIT_MOD_FOCUS:       return xPower_FOCUS;
+        case UNIT_MOD_ENERGY:      return xPower_ENERGY;
+        case UNIT_MOD_RUNE:        return xPower_RUNIC;
+        case UNIT_MOD_RUNIC_POWER: return xPower_RUNIC;
         default:
-        case UNIT_MOD_MANA:        return POWER_MANA;
+        case UNIT_MOD_MANA:        return xPower_MANA;
     }
 }
 
@@ -13474,14 +13469,14 @@ float Unit::GetTotalAttackPowerValue(WeaponAttackType attType) const
 {
     if (attType == RANGED_ATTACK)
     {
-        int32 ap = GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER) + GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
+        int32 ap = GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS) + GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS);
         if (ap < 0)
             return 0.0f;
         return ap * (1.0f + GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER));
     }
     else
     {
-        int32 ap = GetInt32Value(UNIT_FIELD_ATTACK_POWER) + GetInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
+        int32 ap = GetInt32Value(UNIT_FIELD_ATTACK_POWER) + GetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS);
         if (ap < 0)
             return 0.0f;
         return ap * (1.0f + GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER));
@@ -13593,10 +13588,6 @@ void Unit::SetPower(Powers power, uint32 val)
             if (owner && (owner->GetTypeId() == TYPEID_PLAYER) && owner->ToPlayer()->GetGroup())
                 owner->ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_CUR_POWER);
         }
-
-        // Update the pet's character sheet with happiness damage bonus
-        if (pet->getPetType() == HUNTER_PET && power == POWER_HAPPINESS)
-            pet->UpdateDamagePhysical(BASE_ATTACK);
     }
 }
 
@@ -13627,17 +13618,15 @@ void Unit::SetMaxPower(Powers power, uint32 val)
 
 uint32 Unit::GetCreatePowers(Powers power) const
 {
-    // POWER_FOCUS and POWER_HAPPINESS only have hunter pet
+    // xPower_FOCUS and POWER_HAPPINESS only have hunter pet
     switch (power)
     {
-        case POWER_MANA:      return GetCreateMana();
-        case POWER_RAGE:      return 1000;
-        case POWER_FOCUS:     return (GetTypeId() == TYPEID_PLAYER || !((Creature const*)this)->isPet() || ((Pet const*)this)->getPetType() != HUNTER_PET ? 0 : 100);
-        case POWER_ENERGY:    return 100;
-        case POWER_HAPPINESS: return (GetTypeId() == TYPEID_PLAYER || !((Creature const*)this)->isPet() || ((Pet const*)this)->getPetType() != HUNTER_PET ? 0 : 1050000);
-        case POWER_RUNIC_POWER: return 1000;
-        case POWER_RUNE:      return 0;
-        case POWER_HEALTH:    return 0;
+        case xPower_MANA:      return GetCreateMana();
+        case xPower_RAGE:      return 1000;
+        case xPower_FOCUS:     return (GetTypeId() == TYPEID_PLAYER || !((Creature const*)this)->isPet() || ((Pet const*)this)->getPetType() != HUNTER_PET ? 0 : 100);
+        case xPower_ENERGY:    return 100;
+        case xPower_RUNIC: return 1000;
+        case xPower_HP:    return 0;
         default:
             break;
     }
@@ -17095,6 +17084,9 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
         *data << float (GetTransOffsetO());
         *data << uint32(GetTransTime());
         *data << uint8 (GetTransSeat());
+
+        if (m_movementInfo.flags2 & 0x400)
+           *data << uint32(0); //4.0.1
     }
 
     // 0x02200000
@@ -17264,7 +17256,7 @@ void Unit::RewardRage(uint32 damage, uint32 weaponSpeedHitFactor, bool attacker)
 
     addRage *= sWorld->getRate(RATE_POWER_RAGE_INCOME);
 
-    ModifyPower(POWER_RAGE, uint32(addRage * 10));
+    ModifyPower(xPower_RAGE, uint32(addRage * 10));
 }
 
 void Unit::StopAttackFaction(uint32 faction_id)

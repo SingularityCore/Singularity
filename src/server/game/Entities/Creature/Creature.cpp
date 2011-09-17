@@ -547,10 +547,10 @@ void Creature::Update(uint32 diff)
             if (!IsInEvadeMode() && (!bInCombat || IsPolymorphed())) // regenerate health if not in combat or if polymorphed
                 RegenerateHealth();
 
-            if (getPowerType() == POWER_ENERGY)
+            if (getPowerType() == xPower_ENERGY)
             {
                 if (!IsVehicle() || GetVehicleKit()->GetVehicleInfo()->m_powerType != POWER_PYRITE)
-                    Regenerate(POWER_ENERGY);
+                    Regenerate(xPower_ENERGY);
             }
             else
                 RegenerateMana();
@@ -576,8 +576,8 @@ void Creature::Update(uint32 diff)
 
 void Creature::RegenerateMana()
 {
-    uint32 curValue = GetPower(POWER_MANA);
-    uint32 maxValue = GetMaxPower(POWER_MANA);
+    uint32 curValue = GetPower(xPower_MANA);
+    uint32 maxValue = GetMaxPower(xPower_MANA);
 
     if (curValue >= maxValue)
         return;
@@ -601,12 +601,12 @@ void Creature::RegenerateMana()
     // Apply modifiers (if any).
     AuraEffectList const& ModPowerRegenPCTAuras = GetAuraEffectsByType(SPELL_AURA_MOD_POWER_REGEN_PERCENT);
     for (AuraEffectList::const_iterator i = ModPowerRegenPCTAuras.begin(); i != ModPowerRegenPCTAuras.end(); ++i)
-        if ((*i)->GetMiscValue() == POWER_MANA)
+        if ((*i)->GetMiscValue() == xPower_MANA)
             AddPctN(addvalue, (*i)->GetAmount());
 
-    addvalue += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, POWER_MANA) * CREATURE_REGEN_INTERVAL / (5 * IN_MILLISECONDS);
+    addvalue += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, xPower_MANA) * CREATURE_REGEN_INTERVAL / (5 * IN_MILLISECONDS);
 
-    ModifyPower(POWER_MANA, addvalue);
+    ModifyPower(xPower_MANA, addvalue);
 }
 
 void Creature::RegenerateHealth()
@@ -628,7 +628,7 @@ void Creature::RegenerateHealth()
         float HealthIncreaseRate = sWorld->getRate(RATE_HEALTH);
         float Spirit = GetStat(STAT_SPIRIT);
 
-        if (GetPower(POWER_MANA) > 0)
+        if (GetPower(xPower_MANA) > 0)
             addvalue = uint32(Spirit * 0.25 * HealthIncreaseRate);
         else
             addvalue = uint32(Spirit * 0.80 * HealthIncreaseRate);
@@ -1067,7 +1067,7 @@ void Creature::SaveToDB(uint32 mapid, uint8 spawnMask, uint32 phaseMask)
     data.spawndist = GetDefaultMovementType() == IDLE_MOTION_TYPE ? 0 : m_respawnradius;
     data.currentwaypoint = 0;
     data.curhealth = GetHealth();
-    data.curmana = GetPower(POWER_MANA);
+    data.curmana = GetPower(xPower_MANA);
     // prevent add data integrity problems
     data.movementType = !m_respawnradius && GetDefaultMovementType() == RANDOM_MOTION_TYPE
         ? IDLE_MOTION_TYPE : GetDefaultMovementType();
@@ -1098,7 +1098,7 @@ void Creature::SaveToDB(uint32 mapid, uint8 spawnMask, uint32 phaseMask)
         << (float) m_respawnradius << ','                   //spawn distance (float)
         << (uint32) (0) << ','                              //currentwaypoint
         << GetHealth() << ','                               //curhealth
-        << GetPower(POWER_MANA) << ','                      //curmana
+        << GetPower(xPower_MANA) << ','                      //curmana
         << GetDefaultMovementType() << ','                  //default movement generator type
         << npcflag << ','
         << unit_flags << ','
@@ -1136,8 +1136,8 @@ void Creature::SelectLevel(const CreatureTemplate *cinfo)
     uint32 mana = stats->GenerateMana(cinfo);
 
     SetCreateMana(mana);
-    SetMaxPower(POWER_MANA, mana);                          //MAX Mana
-    SetPower(POWER_MANA, mana);
+    SetMaxPower(xPower_MANA, mana);                          //MAX Mana
+    SetPower(xPower_MANA, mana);
 
     // TODO: set UNIT_FIELD_POWER*, for some creature class case (energy, etc)
 
@@ -1301,12 +1301,12 @@ bool Creature::LoadFromDB(uint32 guid, Map *map)
             if (curhealth < 1)
                 curhealth = 1;
         }
-        SetPower(POWER_MANA, data->curmana);
+        SetPower(xPower_MANA, data->curmana);
     }
     else
     {
         curhealth = GetMaxHealth();
-        SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+        SetPower(xPower_MANA, GetMaxPower(xPower_MANA));
     }
 
     SetHealth(m_deathState == ALIVE ? curhealth : 0);
@@ -1694,7 +1694,7 @@ SpellInfo const *Creature::reachWithSpellAttack(Unit *pVictim)
         }
         if (bcontinue) continue;
 
-        if (spellInfo->ManaCost > GetPower(POWER_MANA))
+        if (spellInfo->ManaCost > GetPower(xPower_MANA))
             continue;
         float range = spellInfo->GetMaxRange(false);
         float minrange = spellInfo->GetMinRange(false);
@@ -1737,7 +1737,7 @@ SpellInfo const *Creature::reachWithSpellCure(Unit *pVictim)
         }
         if (bcontinue) continue;
 
-        if (spellInfo->ManaCost > GetPower(POWER_MANA))
+        if (spellInfo->ManaCost > GetPower(xPower_MANA))
             continue;
 
         float range = spellInfo->GetMaxRange(true);

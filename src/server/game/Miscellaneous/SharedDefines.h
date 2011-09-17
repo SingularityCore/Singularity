@@ -111,6 +111,21 @@ enum Classes
 // max+1 for player class
 #define MAX_CLASSES       12
 
+enum Powers
+{
+    xPower_MANA      = 0, // CLASS_PALADIN, CLASS_PRIEST, CLASS_SHAMAN, CLASS_MAGE, CLASS_WARLOCK, CLASS_DRUID
+    xPower_RAGE      = 1, // CLASS_WARRIOR, CLASS_DRUID
+    xPower_FOCUS     = 2, // CLASS_HUNTER, 
+    xPower_ENERGY    = 3, // CLASS_ROGUE, CLASS_DRUID
+    xPower_RUNIC     = 6, // CLASS_DEATH_KNIGHT
+    xPower_SOULSHARD = 7, // CLASS_WARLOCK, 
+    xPower_ECLIPSE   = 8, // CLASS_DRUID
+    xPower_HOLY      = 9, // CLASS_PALADIN
+    xPower_HP        = 10, //CLASS_WARLOCK, CLASS_DRUID, CLASS_MAGE, CLASS_SHAMAN, CLASS_DEATH_KNIGHT, CLASS_PRIEST, CLASS_ROGUE, CLASS_HUNTER, CLASS_PALADIN, CLASS_WARRIOR
+};
+
+#define MAX_POWERS        11
+
 #define CLASSMASK_ALL_PLAYABLE \
     ((1<<(CLASS_WARRIOR-1))|(1<<(CLASS_PALADIN-1))|(1<<(CLASS_HUNTER-1))| \
     (1<<(CLASS_ROGUE-1))  |(1<<(CLASS_PRIEST-1)) |(1<<(CLASS_SHAMAN-1))| \
@@ -166,20 +181,6 @@ enum Stats
 };
 
 #define MAX_STATS                        5
-
-enum Powers
-{
-    POWER_MANA                          = 0,
-    POWER_RAGE                          = 1,
-    POWER_FOCUS                         = 2,
-    POWER_ENERGY                        = 3,
-    POWER_HAPPINESS                     = 4,
-    POWER_RUNE                          = 5,
-    POWER_RUNIC_POWER                   = 6,
-    MAX_POWERS                          = 7,
-    POWER_ALL                           = 127,    // default for class?
-    POWER_HEALTH                        = 0xFFFFFFFE    // (-2 as signed value)
-};
 
 enum SpellSchools
 {

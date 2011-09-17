@@ -213,9 +213,9 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
 
             SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
                                                             // this enables popup window (pet abandon, cancel)
-            SetMaxPower(POWER_HAPPINESS, GetCreatePowers(POWER_HAPPINESS));
-            SetPower(POWER_HAPPINESS, fields[12].GetUInt32());
-            setPowerType(POWER_FOCUS);
+//            SetMaxPower(POWER_HAPPINESS, GetCreatePowers(POWER_HAPPINESS));
+//            SetPower(POWER_HAPPINESS, fields[12].GetUInt32());
+            setPowerType(xPower_FOCUS);
             break;
         default:
             if (!IsPetGhoul())
@@ -235,7 +235,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
     SetCanModifyStats(true);
 
     if (getPetType() == SUMMON_PET && !current)              //all (?) summon pets come with full health when called, but not when they are current
-        SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+        SetPower(xPower_MANA, GetMaxPower(xPower_MANA));
     else
     {
         uint32 savedhealth = fields[10].GetUInt32();
@@ -245,7 +245,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
         else
         {
             SetHealth(savedhealth > GetMaxHealth() ? GetMaxHealth() : savedhealth);
-            SetPower(POWER_MANA, savedmana > GetMaxPower(POWER_MANA) ? GetMaxPower(POWER_MANA) : savedmana);
+            SetPower(xPower_MANA, savedmana > GetMaxPower(xPower_MANA) ? GetMaxPower(xPower_MANA) : savedmana);
         }
     }
 
@@ -365,7 +365,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
     }
 
     uint32 curhealth = GetHealth();
-    uint32 curmana = GetPower(POWER_MANA);
+    uint32 curmana = GetPower(xPower_MANA);
 
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
     // save auras before possibly removing them
@@ -413,8 +413,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
             << name.c_str() << "', "
             << uint32(HasByteFlag(UNIT_FIELD_BYTES_2, 2, UNIT_CAN_BE_RENAMED) ? 0 : 1) << ','
             << curhealth << ','
-            << curmana << ','
-            << GetPower(POWER_HAPPINESS) << ", '";
+            << curmana << ", '";
 
         for (uint32 i = ACTION_BAR_INDEX_START; i < ACTION_BAR_INDEX_END; ++i)
         {
@@ -459,12 +458,6 @@ void Pet::setDeathState(DeathState s)                       // overwrite virtual
             // pet corpse non lootable and non skinnable
             SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_NONE);
             RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
-
-             //lose happiness when died and not in BG/Arena
-            MapEntry const* mapEntry = sMapStore.LookupEntry(GetMapId());
-            if (!mapEntry || (mapEntry->map_type != MAP_ARENA && mapEntry->map_type != MAP_BATTLEGROUND))
-                ModifyPower(POWER_HAPPINESS, -HAPPINESS_LEVEL_SIZE);
-
             //SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
         }
     }
@@ -535,14 +528,14 @@ void Pet::Update(uint32 diff)
                 {
                     switch (getPowerType())
                     {
-                        case POWER_FOCUS:
-                            Regenerate(POWER_FOCUS);
+                        case xPower_FOCUS:
+                            Regenerate(xPower_FOCUS);
                             m_regenTimer += PET_FOCUS_REGEN_INTERVAL - diff;
                             if (!m_regenTimer) ++m_regenTimer;
                             break;
                         // in creature::update
-                        //case POWER_ENERGY:
-                        //    Regenerate(POWER_ENERGY);
+                        //case xPower_ENERGY:
+                        //    Regenerate(xPower_ENERGY);
                         //    m_regenTimer += CREATURE_REGEN_INTERVAL - diff;
                         //    if (!m_regenTimer) ++m_regenTimer;
                         //    break;
@@ -555,14 +548,6 @@ void Pet::Update(uint32 diff)
 
             if (getPetType() != HUNTER_PET)
                 break;
-
-            if (m_happinessTimer <= diff)
-            {
-                LoseHappiness();
-                m_happinessTimer = 7500;
-            }
-            else
-                m_happinessTimer -= diff;
 
             break;
         }
@@ -584,13 +569,13 @@ void Creature::Regenerate(Powers power)
 
     switch (power)
     {
-        case POWER_FOCUS:
+        case xPower_FOCUS:
         {
             // For hunter pets.
             addvalue = 24 * sWorld->getRate(RATE_POWER_FOCUS);
             break;
         }
-        case POWER_ENERGY:
+        case xPower_ENERGY:
         {
             // For deathknight's ghoul.
             addvalue = 20;
@@ -611,24 +596,13 @@ void Creature::Regenerate(Powers power)
     ModifyPower(power, int32(addvalue));
 }
 
-void Pet::LoseHappiness()
-{
-    uint32 curValue = GetPower(POWER_HAPPINESS);
-    if (curValue <= 0)
-        return;
-    int32 addvalue = 670;                                   //value is 70/35/17/8/4 (per min) * 1000 / 8 (timer 7.5 secs)
-    if (isInCombat())                                        //we know in combat happiness fades faster, multiplier guess
-        addvalue = int32(addvalue * 1.5);
-    ModifyPower(POWER_HAPPINESS, -addvalue);
-}
-
 HappinessState Pet::GetHappinessState()
-{
-    if (GetPower(POWER_HAPPINESS) < HAPPINESS_LEVEL_SIZE)
+{/*
+    if (GetPower(0) < HAPPINESS_LEVEL_SIZE)
         return UNHAPPY;
-    else if (GetPower(POWER_HAPPINESS) >= HAPPINESS_LEVEL_SIZE * 2)
+    else if (GetPower(0) >= HAPPINESS_LEVEL_SIZE * 2)
         return HAPPY;
-    else
+    else*/
         return CONTENT;
 }
 
@@ -744,9 +718,9 @@ bool Pet::CreateBaseAtTamed(CreatureTemplate const* cinfo, Map * map, uint32 pha
     if (!Create(guid, map, phaseMask, cinfo->Entry, pet_number))
         return false;
 
-    SetMaxPower(POWER_HAPPINESS, GetCreatePowers(POWER_HAPPINESS));
-    SetPower(POWER_HAPPINESS, 166500);
-    setPowerType(POWER_FOCUS);
+    //SetMaxPower(0, GetCreatePowers(0));
+    //SetPower(0, 166500);
+    setPowerType(xPower_FOCUS);
     SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, 0);
     SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
     SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, uint32(sObjectMgr->GetXPForLevel(getLevel()+1)*PET_XP_FACTOR));
@@ -989,7 +963,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
     UpdateAllStats();
 
     SetFullHealth();
-    SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+    SetPower(xPower_MANA, GetMaxPower(xPower_MANA));
     return true;
 }
 

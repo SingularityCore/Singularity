@@ -150,8 +150,8 @@ public:
                         spellId = HUNTER_SPELL_CHIMERA_SHOT_VIPER;
 
                         // Amount of one aura tick
-                        basePoint = int32(CalculatePctN(unitTarget->GetMaxPower(POWER_MANA), aurEff->GetAmount()));
-                        int32 casterBasePoint = aurEff->GetAmount() * unitTarget->GetMaxPower(POWER_MANA) / 50; // TODO: WTF? caster uses unitTarget?
+                        basePoint = int32(CalculatePctN(unitTarget->GetMaxPower(xPower_MANA), aurEff->GetAmount()));
+                        int32 casterBasePoint = aurEff->GetAmount() * unitTarget->GetMaxPower(xPower_MANA) / 50; // TODO: WTF? caster uses unitTarget?
                         if (basePoint > casterBasePoint)
                             basePoint = casterBasePoint;
                         ApplyPctN(basePoint, TickCount * 60);

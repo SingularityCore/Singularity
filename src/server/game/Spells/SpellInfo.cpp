@@ -1167,7 +1167,7 @@ bool SpellInfo::IsStackableWithRanks() const
 {
     if (IsPassive())
         return false;
-    if (PowerType != POWER_MANA && PowerType != POWER_HEALTH)
+    if (PowerType != xPower_MANA && PowerType != xPower_HP)
         return false;
     if (IsProfessionOrRiding())
         return false;
@@ -2124,7 +2124,7 @@ uint32 SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask) 
     if (AttributesEx & SPELL_ATTR1_DRAIN_ALL_POWER)
     {
         // If power type - health drain all
-        if (PowerType == POWER_HEALTH)
+        if (PowerType == xPower_HP)
             return caster->GetHealth();
         // Else drain all power
         if (PowerType < MAX_POWERS)
@@ -2141,20 +2141,16 @@ uint32 SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask) 
         switch (PowerType)
         {
             // health as power used
-            case POWER_HEALTH:
+            case xPower_HP:
                 powerCost += int32(CalculatePctU(caster->GetCreateHealth(), ManaCostPercentage));
                 break;
-            case POWER_MANA:
+            case xPower_MANA:
                 powerCost += int32(CalculatePctU(caster->GetCreateMana(), ManaCostPercentage));
                 break;
-            case POWER_RAGE:
-            case POWER_FOCUS:
-            case POWER_ENERGY:
-            case POWER_HAPPINESS:
-                powerCost += int32(CalculatePctU(caster->GetMaxPower(Powers(PowerType)), ManaCostPercentage));
-                break;
-            case POWER_RUNE:
-            case POWER_RUNIC_POWER:
+            case xPower_RAGE:
+            case xPower_FOCUS:
+            case xPower_ENERGY:
+            case xPower_RUNIC:
                 sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "CalculateManaCost: Not implemented yet!");
                 break;
             default:

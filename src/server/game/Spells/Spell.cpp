@@ -2700,11 +2700,11 @@ void Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                         case 71610: // Echoes of Light (Althor's Abacus normal version)
                         case 71641: // Echoes of Light (Althor's Abacus heroic version)
                             maxSize = 1;
-                            power = POWER_HEALTH;
+                            power = xPower_HP;
                             break;
                         case 54968: // Glyph of Holy Light
                             maxSize = m_spellInfo->MaxAffectedTargets;
-                            power = POWER_HEALTH;
+                            power = xPower_HP;
                             break;
                         case 57669: // Replenishment
                             // In arenas Replenishment may only affect the caster
@@ -2715,7 +2715,7 @@ void Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                                 break;
                             }
                             maxSize = 10;
-                            power = POWER_MANA;
+                            power = xPower_MANA;
                             break;
                         default:
                             break;
@@ -2725,17 +2725,17 @@ void Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                     if (m_spellInfo->SpellFamilyFlags[0] == 0x10000000) // Circle of Healing
                     {
                         maxSize = m_caster->HasAura(55675) ? 6 : 5; // Glyph of Circle of Healing
-                        power = POWER_HEALTH;
+                        power = xPower_HP;
                     }
                     else if (m_spellInfo->Id == 64844) // Divine Hymn
                     {
                         maxSize = 3;
-                        power = POWER_HEALTH;
+                        power = xPower_HP;
                     }
                     else if (m_spellInfo->Id == 64904) // Hymn of Hope
                     {
                         maxSize = 3;
-                        power = POWER_MANA;
+                        power = xPower_MANA;
                     }
                     else
                         break;
@@ -2753,7 +2753,7 @@ void Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                     if (m_spellInfo->SpellFamilyFlags[1] == 0x04000000) // Wild Growth
                     {
                         maxSize = m_caster->HasAura(62970) ? 6 : 5; // Glyph of Wild Growth
-                        power = POWER_HEALTH;
+                        power = xPower_HP;
                     }
                     else if (m_spellInfo->SpellFamilyFlags[2] == 0x0100) // Starfall
                     {
@@ -2783,7 +2783,7 @@ void Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
 
             if (maxSize && power != -1)
             {
-                if (Powers(power) == POWER_HEALTH)
+                if (Powers(power) == xPower_HP)
                 {
                     if (unitList.size() > maxSize)
                     {
@@ -3778,10 +3778,10 @@ void Spell::SendSpellStart()
         castFlags |= CAST_FLAG_AMMO;
     if ((m_caster->GetTypeId() == TYPEID_PLAYER ||
         (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->ToCreature()->isPet()))
-         && m_spellInfo->PowerType != POWER_HEALTH)
+         && m_spellInfo->PowerType != xPower_HP)
         castFlags |= CAST_FLAG_POWER_LEFT_SELF;
 
-    if (m_spellInfo->RuneCostID && m_spellInfo->PowerType == POWER_RUNE)
+    if (m_spellInfo->RuneCostID && m_spellInfo->PowerType == xPower_RUNIC)
         castFlags |= CAST_FLAG_UNKNOWN_19;
 
     WorldPacket data(SMSG_SPELL_START, (8+8+4+4+2));
@@ -3831,13 +3831,13 @@ void Spell::SendSpellGo()
         castFlags |= CAST_FLAG_AMMO;                        // arrows/bullets visual
     if ((m_caster->GetTypeId() == TYPEID_PLAYER ||
         (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->ToCreature()->isPet()))
-        && m_spellInfo->PowerType != POWER_HEALTH)
+        && m_spellInfo->PowerType != xPower_HP)
         castFlags |= CAST_FLAG_POWER_LEFT_SELF; // should only be sent to self, but the current messaging doesn't make that possible
 
     if ((m_caster->GetTypeId() == TYPEID_PLAYER)
         && (m_caster->getClass() == CLASS_DEATH_KNIGHT)
         && m_spellInfo->RuneCostID
-        && m_spellInfo->PowerType == POWER_RUNE)
+        && m_spellInfo->PowerType == xPower_RUNIC)
     {
         castFlags |= CAST_FLAG_UNKNOWN_19;                   // same as in SMSG_SPELL_START
         castFlags |= CAST_FLAG_RUNE_LIST;                    // rune cooldowns list
@@ -4278,7 +4278,7 @@ void Spell::TakePower()
     bool hit = true;
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {
-        if (powerType == POWER_RAGE || powerType == POWER_ENERGY || powerType == POWER_RUNE)
+        if (powerType == xPower_RAGE || powerType == xPower_ENERGY || powerType == xPower_RUNIC)
             if (uint64 targetGUID = m_targets.GetUnitTargetGUID())
                 for (std::list<TargetInfo>::iterator ihit= m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
                     if (ihit->targetGUID == targetGUID)
@@ -4295,7 +4295,7 @@ void Spell::TakePower()
                     }
     }
 
-    if (powerType == POWER_RUNE)
+    if (powerType == xPower_RUNIC)
     {
         TakeRunePower(hit);
         return;
@@ -4305,7 +4305,7 @@ void Spell::TakePower()
         return;
 
     // health as power used
-    if (powerType == POWER_HEALTH)
+    if (powerType == xPower_HP)
     {
         m_caster->ModifyHealth(-(int32)m_powerCost);
         return;
@@ -4323,7 +4323,7 @@ void Spell::TakePower()
         m_caster->ModifyPower(powerType, -irand(0, m_powerCost/4));
 
     // Set the five second timer
-    if (powerType == POWER_MANA && m_powerCost > 0)
+    if (powerType == xPower_MANA && m_powerCost > 0)
         m_caster->SetLastManaUse(getMSTime());
 }
 
@@ -4358,7 +4358,7 @@ void Spell::TakeAmmo()
 
 SpellCastResult Spell::CheckRuneCost(uint32 runeCostID)
 {
-    if (m_spellInfo->PowerType != POWER_RUNE || !runeCostID)
+    if (m_spellInfo->PowerType != xPower_RUNIC || !runeCostID)
         return SPELL_CAST_OK;
 
     if (m_caster->GetTypeId() != TYPEID_PLAYER)
@@ -4465,7 +4465,7 @@ void Spell::TakeRunePower(bool didHit)
     // you can gain some runic power when use runes
     if (didHit)
         if (int32 rp = int32(runeCostData->runePowerGain * sWorld->getRate(RATE_POWER_RUNICPOWER_INCOME)))
-            player->ModifyPower(POWER_RUNIC_POWER, int32(rp));
+            player->ModifyPower(xPower_RUNIC, int32(rp));
 }
 
 void Spell::TakeReagents()
@@ -5422,7 +5422,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (m_caster->GetTypeId() != TYPEID_PLAYER || m_CastItem)
                     break;
 
-                if (m_targets.GetUnitTarget()->getPowerType() != POWER_MANA)
+                if (m_targets.GetUnitTarget()->getPowerType() != xPower_MANA)
                     return SPELL_FAILED_BAD_TARGETS;
 
                 break;
@@ -5732,7 +5732,7 @@ SpellCastResult Spell::CheckPower()
         return SPELL_CAST_OK;
 
     // health as power used - need check health amount
-    if (m_spellInfo->PowerType == POWER_HEALTH)
+    if (m_spellInfo->PowerType == xPower_HP)
     {
         if (int32(m_caster->GetHealth()) <= m_powerCost)
             return SPELL_FAILED_CASTER_AURASTATE;
@@ -5745,8 +5745,8 @@ SpellCastResult Spell::CheckPower()
         return SPELL_FAILED_UNKNOWN;
     }
 
-    //check rune cost only if a spell has PowerType == POWER_RUNE
-    if (m_spellInfo->PowerType == POWER_RUNE)
+    //check rune cost only if a spell has PowerType == xPower_RUNIC
+    if (m_spellInfo->PowerType == xPower_RUNIC)
     {
         SpellCastResult failReason = CheckRuneCost(m_spellInfo->RuneCostID);
         if (failReason != SPELL_CAST_OK)
