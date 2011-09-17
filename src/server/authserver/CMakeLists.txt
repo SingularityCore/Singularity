@@ -1,3 +1,4 @@
+# Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
 # Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
 #
 # This file is free software; as a special exception the author gives

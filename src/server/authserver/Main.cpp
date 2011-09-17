@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
  * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
@@ -33,8 +34,8 @@
 #include "RealmList.h"
 #include "RealmAcceptor.h"
 
-#ifndef _TRINITY_REALM_CONFIG
-# define _TRINITY_REALM_CONFIG  "authserver.conf"
+#ifndef _AUTHSERVER_CONFIG
+# define _AUTHSERVER_CONFIG  "authserver.conf"
 #endif
 
 bool StartDB();
@@ -73,7 +74,7 @@ extern int main(int argc, char **argv)
 {
     sLog->SetLogDB(false);
     // Command line parsing to get the configuration file name
-    char const *cfg_file = _TRINITY_REALM_CONFIG;
+    char const *cfg_file = _AUTHSERVER_CONFIG;
     int c = 1;
     while(c < argc)
     {
