@@ -210,7 +210,6 @@ void LoadDBCStores(const std::string& dataPath);
  DBCStorage <SpellEntry>                 const* GetSpellStore();
  DBCStorage <SpellRangeEntry>            const* GetSpellRangeStore();
  DBCStorage <FactionEntry>               const* GetFactionStore();
- DBCStorage <ItemEntry>                  const* GetItemDisplayStore();
  DBCStorage <CreatureDisplayInfoEntry>   const* GetCreatureDisplayStore();
  DBCStorage <EmotesEntry>                const* GetEmotesStore();
  DBCStorage <EmotesTextEntry>            const* GetEmotesTextStore();

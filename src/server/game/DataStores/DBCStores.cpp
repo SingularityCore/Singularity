@@ -688,16 +688,15 @@ void LoadDBCStores(const std::string& dataPath)
 
     //TODO: Add correct values for  4.0.6
     // Check loaded DBC files proper version
-    //if (!sAreaStore.LookupEntry(3617)              ||       // last area (areaflag) added in 3.3.5a
-    //    !sCharTitlesStore.LookupEntry(177)         ||       // last char title added in 3.3.5a
-    //    !sGemPropertiesStore.LookupEntry(1629)     ||       // last added spell in 3.3.5a
-    //    !sItemExtendedCostStore.LookupEntry(2997)  ||       // last item extended cost added in 3.3.5a
-    //    !sMapStore.LookupEntry(724)                ||       // last map added in 3.3.5a
-    //    !sSpellStore.LookupEntry(80864)            )        // last client known item added in 3.3.5a
-    //{
-    //    sLog->outError("You have _outdated_ DBC files. Please extract correct versions from current using client.");
-    //    exit(1);
-    //}
+    if (!sAreaStore.LookupEntry(4559)              ||       // last area (areaflag) added in 4.2.0 (14333)
+        !sCharTitlesStore.LookupEntry(279)         ||       // last char title added in 4.2.0 (14333)
+        !sGemPropertiesStore.LookupEntry(1860)     ||       // last added spell in 4.2.0 (14333)
+        !sMapStore.LookupEntry(968)                ||       // last map added in 4.2.0 (14333)
+        !sSpellStore.LookupEntry(102129)            )       // last client known item added in 4.2.0 (14333)
+    {
+        sLog->outError("You have _outdated_ DBC files. Please extract correct versions from current using client.");
+        exit(1);
+    }
 
     sLog->outString(">> Initialized %d data stores in %u ms", DBCFileCount, GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();

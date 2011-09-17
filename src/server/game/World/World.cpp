@@ -45,6 +45,8 @@
 #include "GroupMgr.h"
 #include "Chat.h"
 #include "DBCStores.h"
+#include "DB2Stores.h"
+#include "ItemInfo.h"
 #include "LootMgr.h"
 #include "ItemEnchantmentMgr.h"
 #include "MapManager.h"
@@ -1253,6 +1255,7 @@ void World::SetInitialWorldSettings()
     ///- Load the DBC files
     sLog->outString("Initialize data stores...");
     LoadDBCStores(m_dataPath);
+	LoadDB2Stores(m_dataPath);
     DetectDBCLang();
 
     sLog->outString("Loading spell dbc data corrections...");
@@ -1346,6 +1349,9 @@ void World::SetInitialWorldSettings()
 
     sLog->outString("Loading Item set names...");                // must be after LoadItemPrototypes
     sObjectMgr->LoadItemSetNames();
+	
+	sLog->outString("Loading Items Info...");
+	sItemInfoMgr->LoadItemInfo();
 
     sLog->outString("Loading Creature Model Based Info Data...");
     sObjectMgr->LoadCreatureModelInfo();
