@@ -3478,10 +3478,11 @@ void Unit::_RemoveNoStackAurasDueToAura(Aura* aura)
 
 void Unit::_RegisterAuraEffect(AuraEffect* aurEff, bool apply)
 {
+    AuraType Auratype = aurEff->GetAuraType();
     if (apply)
-        m_modAuras[aurEff->GetAuraType()].push_back(aurEff);
+        m_modAuras[Auratype].push_back(aurEff);
     else
-        m_modAuras[aurEff->GetAuraType()].remove(aurEff);
+        m_modAuras[Auratype].remove(aurEff);
 }
 
 // All aura base removes should go threw this function!
