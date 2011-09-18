@@ -4464,12 +4464,6 @@ bool Player::resetTalents(bool no_cost)
     return true;
 }
 
-void Player::SetFreeTalentPoints(uint32 points)
-{
-    sScriptMgr->OnPlayerFreeTalentPointsChanged(this, points);
-    SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
-}
-
 Mail* Player::GetMail(uint32 id)
 {
     for (PlayerMails::iterator itr = m_mail.begin(); itr != m_mail.end(); ++itr)
@@ -4569,7 +4563,6 @@ void Player::InitVisibleBits()
     updateVisualBits.SetBit(PLAYER_DUEL_ARBITER + 0);
     updateVisualBits.SetBit(PLAYER_DUEL_ARBITER + 1);
     updateVisualBits.SetBit(PLAYER_FLAGS);
-    updateVisualBits.SetBit(PLAYER_GUILDID);
     updateVisualBits.SetBit(PLAYER_GUILDRANK);
     updateVisualBits.SetBit(PLAYER_BYTES);
     updateVisualBits.SetBit(PLAYER_BYTES_2);
@@ -5259,8 +5252,6 @@ void Player::CreateCorpse()
 
     corpse->SetUInt32Value(CORPSE_FIELD_DISPLAY_ID, GetNativeDisplayId());
 
-    corpse->SetUInt32Value(CORPSE_FIELD_GUILD, GetGuildId());
-
     uint32 iDisplayID;
     uint32 iIventoryType;
     uint32 _cfi;
@@ -5580,7 +5571,7 @@ void Player::CleanupChannels()
 void Player::UpdateLocalChannels(uint32 newZone)
 {
     if (GetSession()->PlayerLoading() && !IsBeingTeleportedFar())
-        return;                                              // The client handles it automatically after loading, but not after teleporting
+        return; // The client handles it automatically after loading, but not after teleporting
 
     AreaTableEntry const* current_zone = GetAreaEntryByAreaID(newZone);
     if (!current_zone)
@@ -5590,74 +5581,80 @@ void Player::UpdateLocalChannels(uint32 newZone)
     if (!cMgr)
         return;
 
-    std::string current_zone_name = current_zone->area_name[GetSession()->GetSessionDbcLocale()];
+    //std::string current_zone_name = current_zone->area_name[GetSession()->GetSessionDbcLocale()];
 
-    for (uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
-    {
-        if (ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i))
-        {
-            Channel* usedChannel = NULL;
+    //for (uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
+    //{
+    //    if (ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i))
+    //    {
+    //        if (!(channel->flags & CHANNEL_DBC_FLAG_ZONE_DEP))
+    //            continue; // Not zone dependent, don't handle it here
 
-            for (JoinedChannelsList::iterator itr = m_channels.begin(); itr != m_channels.end(); ++itr)
-            {
-                if ((*itr)->GetChannelId() == i)
-                {
-                    usedChannel = *itr;
-                    break;
-                }
-            }
+    //        if ((channel->flags & CHANNEL_DBC_FLAG_GUILD_REQ) && GetGuildId())
+    //            continue; // Should not join to these channels automatically
 
-            Channel* removeChannel = NULL;
-            Channel* joinChannel = NULL;
-            bool sendRemove = true;
+    //        Channel* usedChannel = NULL;
 
-            if (CanJoinConstantChannelInZone(channel, current_zone))
-            {
-                if (!(channel->flags & CHANNEL_DBC_FLAG_GLOBAL))
-                {
-                    if (channel->flags & CHANNEL_DBC_FLAG_CITY_ONLY && usedChannel)
-                        continue;                            // Already on the channel, as city channel names are not changing
+    //        for (JoinedChannelsList::iterator itr = m_channels.begin(); itr != m_channels.end(); ++itr)
+    //        {
+    //            if ((*itr)->GetChannelId() == i)
+    //            {
+    //                usedChannel = *itr;
+    //                break;
+    //            }
+    //        }
 
-                    char new_channel_name_buf[100];
-                    char const* currentNameExt;
+    //        Channel* removeChannel = NULL;
+    //        Channel* joinChannel = NULL;
+    //        bool sendRemove = true;
 
-                    if (channel->flags & CHANNEL_DBC_FLAG_CITY_ONLY)
-                        currentNameExt = sObjectMgr->GetTrinityStringForDBCLocale(LANG_CHANNEL_CITY);
-                    else
-                        currentNameExt = current_zone_name.c_str();
+    //        if (CanJoinConstantChannelInZone(channel, current_zone))
+    //        {
+    //            if (!(channel->flags & CHANNEL_DBC_FLAG_GLOBAL))
+    //            {
+    //                if (channel->flags & CHANNEL_DBC_FLAG_CITY_ONLY && usedChannel)
+    //                    continue; // Already on the channel, as city channel names are not changing
 
-                    snprintf(new_channel_name_buf, 100, channel->pattern[m_session->GetSessionDbcLocale()], currentNameExt);
+    //                char new_channel_name_buf[100];
+    //                char const* currentNameExt;
 
-                    joinChannel = cMgr->GetJoinChannel(new_channel_name_buf, channel->ChannelID);
-                    if (usedChannel)
-                    {
-                        if (joinChannel != usedChannel)
-                        {
-                            removeChannel = usedChannel;
-                            sendRemove = false;              // Do not send leave channel, it already replaced at client
-                        }
-                        else
-                            joinChannel = NULL;
-                    }
-                }
-                else
-                    joinChannel = cMgr->GetJoinChannel(channel->pattern[m_session->GetSessionDbcLocale()], channel->ChannelID);
-            }
-            else
-                removeChannel = usedChannel;
+    //                if (channel->flags & CHANNEL_DBC_FLAG_CITY_ONLY)
+    //                    currentNameExt = sObjectMgr->GetTrinityStringForDBCLocale(LANG_CHANNEL_CITY);
+    //                else
+    //                    currentNameExt = current_zone_name.c_str();
 
-            if (joinChannel)
-                joinChannel->Join(GetGUID(), "");            // Changed Channel: ... or Joined Channel: ...
+    //                snprintf(new_channel_name_buf, 100, channel->pattern[m_session->GetSessionDbcLocale()], currentNameExt);
 
-            if (removeChannel)
-            {
-                removeChannel->Leave(GetGUID(), sendRemove); // Leave old channel
-                std::string name = removeChannel->GetName(); // Store name, (*i)erase in LeftChannel
-                LeftChannel(removeChannel);                  // Remove from player's channel list
-                cMgr->LeftChannel(name);                     // Delete if empty
-            }
-        }
-    }
+    //                joinChannel = cMgr->GetJoinChannel(new_channel_name_buf, channel->ChannelID);
+    //                if (usedChannel)
+    //                {
+    //                    if (joinChannel != usedChannel)
+    //                    {
+    //                        removeChannel = usedChannel;
+    //                        sendRemove = false; // Do not send leave channel, it already replaced at client
+    //                    }
+    //                    else
+    //                        joinChannel = NULL;
+    //                }
+    //            }
+    //            else
+    //                joinChannel = cMgr->GetJoinChannel(channel->pattern[m_session->GetSessionDbcLocale()], channel->ChannelID);
+    //        }
+    //        else
+    //            removeChannel = usedChannel;
+
+    //        if (joinChannel)
+    //            joinChannel->Join(GetGUID(), ""); // Changed Channel: ... or Joined Channel: ...
+
+    //        if (removeChannel)
+    //        {
+    //            removeChannel->Leave(GetGUID(), sendRemove); // Leave old channel
+    //            std::string name = removeChannel->GetName(); // Store name, (*i)erase in LeftChannel
+    //            LeftChannel(removeChannel); // Remove from player's channel list
+    //            cMgr->LeftChannel(name); // Delete if empty
+    //        }
+    //    }
+    //}
 }
 
 void Player::LeaveLFGChannel()
@@ -7094,16 +7091,12 @@ void Player::UpdateHonorFields()
         // update yesterday's contribution
         if (m_lastHonorUpdateTime >= yesterday)
         {
-            SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION));
-
             // this is the first update today, reset today's contribution
-            SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, 0);
             SetUInt32Value(PLAYER_FIELD_KILLS, MAKE_PAIR32(0, kills_today));
         }
         else
         {
             // no honor/kills yesterday or today, reset
-            SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, 0);
             SetUInt32Value(PLAYER_FIELD_KILLS, 0);
         }
     }
@@ -7235,8 +7228,6 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, int32 honor, bool pvpt
 
     // add honor points
     ModifyCurrency(CURRENCY_TYPE_HONOR_POINTS, int32(honor));
-
-    ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
 
     if (InBattleground() && honor > 0)
     {
@@ -7802,9 +7793,6 @@ void Player::_ApplyItemMods(Item *item, uint8 slot, bool apply)
         _ApplyWeaponDependentAuraMods(item, WeaponAttackType(attacktype), apply);
 
     _ApplyItemBonuses(proto, slot, apply);
-
-    if (slot == EQUIPMENT_SLOT_RANGED)
-        _ApplyAmmoBonuses();
 
     ApplyItemEquipSpell(item, apply);
     ApplyEnchantment(item, apply);
@@ -8598,9 +8586,6 @@ void Player::_RemoveAllItemMods()
                 _ApplyWeaponDependentAuraMods(m_items[i], WeaponAttackType(attacktype), false);
 
             _ApplyItemBonuses(proto, i, false);
-
-            if (i == EQUIPMENT_SLOT_RANGED)
-                _ApplyAmmoBonuses();
         }
     }
 
@@ -8627,9 +8612,6 @@ void Player::_ApplyAllItemMods()
                 _ApplyWeaponDependentAuraMods(m_items[i], WeaponAttackType(attacktype), true);
 
             _ApplyItemBonuses(proto, i, true);
-
-            if (i == EQUIPMENT_SLOT_RANGED)
-                _ApplyAmmoBonuses();
         }
     }
 
@@ -8672,30 +8654,6 @@ void Player::_ApplyAllLevelScaleItemMods(bool apply)
             _ApplyItemBonuses(proto, i, apply, true);
         }
     }
-}
-
-void Player::_ApplyAmmoBonuses()
-{
-    // check ammo
-    uint32 ammo_id = GetUInt32Value(PLAYER_AMMO_ID);
-    if (!ammo_id)
-        return;
-
-    float currentAmmoDPS;
-
-    ItemTemplate const *ammo_proto = sObjectMgr->GetItemTemplate(ammo_id);
-    if (!ammo_proto || ammo_proto->Class != ITEM_CLASS_PROJECTILE || !CheckAmmoCompatibility(ammo_proto))
-        currentAmmoDPS = 0.0f;
-    else
-        currentAmmoDPS = (ammo_proto->Damage[0].DamageMin + ammo_proto->Damage[0].DamageMax) / 2;
-
-    if (currentAmmoDPS == GetAmmoDPS())
-        return;
-
-    m_ammoDPS = currentAmmoDPS;
-
-    if (CanModifyStats())
-        UpdateDamagePhysical(RANGED_ATTACK);
 }
 
 bool Player::CheckAmmoCompatibility(const ItemTemplate *ammo_proto) const
@@ -11982,41 +11940,6 @@ InventoryResult Player::CanUseAmmo(uint32 item) const
         return EQUIP_ERR_OK;
     }
     return EQUIP_ERR_ITEM_NOT_FOUND;
-}
-
-void Player::SetAmmo(uint32 item)
-{
-    if (!item)
-        return;
-
-    // already set
-    if (GetUInt32Value(PLAYER_AMMO_ID) == item)
-        return;
-
-    // check ammo
-    if (item)
-    {
-        InventoryResult msg = CanUseAmmo(item);
-        if (msg != EQUIP_ERR_OK)
-        {
-            SendEquipError(msg, NULL, NULL, item);
-            return;
-        }
-    }
-
-    SetUInt32Value(PLAYER_AMMO_ID, item);
-
-    _ApplyAmmoBonuses();
-}
-
-void Player::RemoveAmmo()
-{
-    SetUInt32Value(PLAYER_AMMO_ID, 0);
-
-    m_ammoDPS = 0.0f;
-
-    if (CanModifyStats())
-        UpdateDamagePhysical(RANGED_ATTACK);
 }
 
 // Return stored item (if stored to stack, it can diff. from pItem). And pItem ca be deleted in this case.
@@ -23951,7 +23874,7 @@ void Player::LearnPetTalent(uint64 petGuid, uint32 talentId, uint32 talentRank)
 void Player::AddKnownCurrency(uint32 itemId)
 {
     if (CurrencyTypesEntry const* ctEntry = sCurrencyTypesStore.LookupEntry(itemId))
-        SetFlag64(PLAYER_FIELD_KNOWN_CURRENCIES, (1LL << (ctEntry->ID-1)));
+        SetFlag64(0, (1LL << (ctEntry->ID-1)));
 }
 
 void Player::UpdateFallInformationIfNeed(MovementInfo const& minfo, Opcodes opcode)
@@ -24013,7 +23936,8 @@ bool Player::canSeeSpellClickOn(Creature const *c) const
 void Player::BuildPlayerTalentsInfoData(WorldPacket *data)
 {
     *data << uint32(GetFreeTalentPoints());                 // unspentTalentPoints
-    *data << uint8(m_specsCount);                           // talent group count (0, 1 or 2)
+    *data << uint8(0);                                      // for testing
+    //*data << uint8(m_specsCount);                           // talent group count (0, 1 or 2)
     *data << uint8(m_activeSpec);                           // talent group index (0 or 1)
 
     if (m_specsCount)

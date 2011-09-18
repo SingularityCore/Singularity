@@ -4785,10 +4785,6 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                             target->GetMotionMaster()->MoveFall(currentGroundLevel);
                     }
                     break;
-                case 46699:                                     // Requires No Ammo
-                    if (target->GetTypeId() == TYPEID_PLAYER)
-                        target->ToPlayer()->RemoveAmmo();      // not use ammo and not allow use
-                    break;
                 case 49028:
                     if (caster)
                         if (AuraEffect* aurEff = caster->GetAuraEffect(63330, 0)) // glyph of Dancing Rune Weapon

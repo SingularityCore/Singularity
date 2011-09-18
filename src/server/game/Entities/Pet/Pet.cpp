@@ -400,7 +400,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
                 owner, PET_SAVE_AS_CURRENT, PET_SAVE_LAST_STABLE_SLOT);
         // save pet
         std::ostringstream ss;
-        ss  << "INSERT INTO character_pet (id, entry,  owner, modelid, level, exp, Reactstate, slot, name, renamed, curhealth, curmana, curhappiness, abdata, savetime, CreatedBySpell, PetType) "
+        ss  << "INSERT INTO character_pet (id, entry,  owner, modelid, level, exp, Reactstate, slot, name, renamed, curhealth, curmana, abdata, savetime, CreatedBySpell, PetType) "
             << "VALUES ("
             << m_charmInfo->GetPetNumber() << ','
             << GetEntry() << ','
