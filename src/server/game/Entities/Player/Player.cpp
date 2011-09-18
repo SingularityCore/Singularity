@@ -4485,7 +4485,7 @@ void Player::_SetCreateBits(UpdateMask *updateMask, Player *target) const
         Object::_SetCreateBits(updateMask, target);
     else
     {
-        for (uint16 index = 0; index < m_valuesCount; index++)
+        for (uint16 index = 0; index < PLAYER_FIELD_INV_SLOT_HEAD; index++)
             if (GetUInt32Value(index) != 0 && updateVisualBits.GetBit(index))
                 updateMask->SetBit(index);
     }
@@ -4598,6 +4598,8 @@ void Player::InitVisibleBits()
 
 void Player::BuildCreateUpdateBlockForPlayer(UpdateData *data, Player *target) const
 {
+    Unit::BuildCreateUpdateBlockForPlayer(data, target);
+
     for (uint8 i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
         if (m_items[i] == NULL)
@@ -4623,8 +4625,6 @@ void Player::BuildCreateUpdateBlockForPlayer(UpdateData *data, Player *target) c
             m_items[i]->BuildCreateUpdateBlockForPlayer(data, target);
         }
     }
-
-    Unit::BuildCreateUpdateBlockForPlayer(data, target);
 }
 
 void Player::DestroyForPlayer(Player *target, bool anim) const

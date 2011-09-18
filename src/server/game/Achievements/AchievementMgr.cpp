@@ -691,21 +691,21 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
 
 void AchievementMgr::SendCriteriaUpdate(AchievementCriteriaEntry const* entry, CriteriaProgress const* progress, uint32 timeElapsed, bool timedCompleted) const
 {
-    WorldPacket data(SMSG_CRITERIA_UPDATE, 8+4+8);
-    data << uint32(entry->ID);
+    //WorldPacket data(SMSG_CRITERIA_UPDATE, 8+4+8);
+    //data << uint32(entry->ID);
 
-    // the counter is packed like a packed Guid
-    data.appendPackGUID(progress->counter);
+    //// the counter is packed like a packed Guid
+    //data.appendPackGUID(progress->counter);
 
-    data.append(GetPlayer()->GetPackGUID());
-    if (!entry->timeLimit)
-        data << uint32(0);
-    else
-        data << uint32(timedCompleted ? 0 : 1); // this are some flags, 1 is for keeping the counter at 0 in client
-    data << uint32(secsToTimeBitFields(progress->date));
-    data << uint32(timeElapsed);    // time elapsed in seconds
-    data << uint32(0);              // unk
-    GetPlayer()->SendDirectMessage(&data);
+    //data.append(GetPlayer()->GetPackGUID());
+    //if (!entry->timeLimit)
+    //    data << uint32(0);
+    //else
+    //    data << uint32(timedCompleted ? 0 : 1); // this are some flags, 1 is for keeping the counter at 0 in client
+    //data << uint32(secsToTimeBitFields(progress->date));
+    //data << uint32(timeElapsed);    // time elapsed in seconds
+    //data << uint32(0);              // unk
+    //GetPlayer()->SendDirectMessage(&data);
 }
 
 /**
@@ -2081,9 +2081,9 @@ void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
 
 void AchievementMgr::SendAllAchievementData() const
 {
-    WorldPacket data(SMSG_ALL_ACHIEVEMENT_DATA, m_completedAchievements.size()*8+4+m_criteriaProgress.size()*38+4);
+    /*WorldPacket data(SMSG_ALL_ACHIEVEMENT_DATA, m_completedAchievements.size()*8+4+m_criteriaProgress.size()*38+4);
     BuildAllDataPacket(&data);
-    GetPlayer()->GetSession()->SendPacket(&data);
+    GetPlayer()->GetSession()->SendPacket(&data);*/
 }
 
 void AchievementMgr::SendRespondInspectAchievements(Player* player) const

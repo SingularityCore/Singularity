@@ -17060,8 +17060,28 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
             break;
     }
 
-    *data << uint32(GetUnitMovementFlags()); // movement flags
-    *data << uint16(m_movementInfo.flags2);    // 2.3.0
+    data->writeBits(GetUnitMovementFlags(), 30);
+    data->writeBits(m_movementInfo.flags2, 12);
+
+    // field mask
+    if (data->writeBit(GetUnitMovementFlags() & MOVEMENTFLAG_ONTRANSPORT))
+    {
+        data->writeBit(m_movementInfo.flags2 & MOVEMENTFLAG2_INTERPOLATED_MOVEMENT);
+        data->writeBit(0); // Flag for time3. Not implemented.
+    }
+
+    data->writeBit((GetUnitMovementFlags() & (MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING))
+                   || (m_movementInfo.flags2 & MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING));
+
+    if (data->writeBit(m_movementInfo.flags2 & MOVEMENTFLAG2_INTERPOLATED_TURNING))
+        data->writeBit(GetUnitMovementFlags() & MOVEMENTFLAG_JUMPING);
+
+    data->writeBit(GetUnitMovementFlags() & MOVEMENTFLAG_SPLINE_ELEVATION);
+
+    // has spline data
+    data->writeBit(0);
+
+    *data << uint64(GetGUID()); // added in 4.2.0
     *data << uint32(getMSTime());            // time
     *data << GetPositionX();
     *data << GetPositionY();
@@ -17076,17 +17096,17 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
         else if (GetTransport())
             data->append(GetTransport()->GetPackGUID());
         else
-            *data << (uint8)0;
+            *data << uint64(0);
 
         *data << float (GetTransOffsetX());
         *data << float (GetTransOffsetY());
         *data << float (GetTransOffsetZ());
         *data << float (GetTransOffsetO());
-        *data << uint32(GetTransTime());
         *data << uint8 (GetTransSeat());
+        *data << uint32(GetTransTime());
 
-        if (m_movementInfo.flags2 & 0x400)
-           *data << uint32(0); //4.0.1
+        if (m_movementInfo.flags2 & MOVEMENTFLAG2_INTERPOLATED_MOVEMENT)             // & 0x400, 4.0.3
+            *data << uint32(m_movementInfo.t_time2);
     }
 
     // 0x02200000
@@ -17094,15 +17114,19 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
         || (m_movementInfo.flags2 & MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))
         *data << (float)m_movementInfo.pitch;
 
-    *data << (uint32)m_movementInfo.fallTime;
-
-    // 0x00001000
-    if (GetUnitMovementFlags() & MOVEMENTFLAG_JUMPING)
+    //4.0.6
+    if (m_movementInfo.flags2 & MOVEMENTFLAG2_INTERPOLATED_TURNING)    // & 0x800, 4.0.6
     {
+        *data << (uint32)m_movementInfo.fallTime;
         *data << (float)m_movementInfo.j_zspeed;
-        *data << (float)m_movementInfo.j_sinAngle;
-        *data << (float)m_movementInfo.j_cosAngle;
-        *data << (float)m_movementInfo.j_xyspeed;
+
+        // 0x00001000
+        if (GetUnitMovementFlags() & MOVEMENTFLAG_JUMPING)
+        {
+            *data << (float)m_movementInfo.j_sinAngle;
+            *data << (float)m_movementInfo.j_cosAngle;
+            *data << (float)m_movementInfo.j_xyspeed;
+        }
     }
 
     // 0x04000000
