@@ -1262,7 +1262,7 @@ void World::SetInitialWorldSettings()
     sSpellMgr->LoadDbcDataCorrections();
 
     sLog->outString("Loading SpellInfo store...");
-    //sSpellMgr->LoadSpellInfoStore();
+    sSpellMgr->LoadSpellInfoStore();
 
     sLog->outString("Loading spell custom attributes...");
     sSpellMgr->LoadSpellCustomAttr();

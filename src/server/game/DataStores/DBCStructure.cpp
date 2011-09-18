@@ -201,11 +201,10 @@ SpellTargetRestrictionsEntry const* SpellEntry::GetSpellTargetRestrictions() con
     return SpellTargetRestrictionsId ? sSpellTargetRestrictionsStore.LookupEntry(SpellTargetRestrictionsId) : NULL;
 }
 
-SpellTotemsEntry const* SpellEntry::GetSpellTotems() const
+SpellTotemsEntry const* SpellEntry::GetSpellTotems(uint8 eff) const
 {
-    return SpellTotemsId ? sSpellTotemsStore.LookupEntry(SpellTotemsId) : NULL;
+    return GetSpellTotemEntry(Id, eff);
 }
-
 //SpellCooldownsEntry
 uint32 SpellEntry::GetRecoveryTime() const
 {
@@ -524,5 +523,19 @@ uint32 SpellEntry::GetReagentCount(uint8 reagents) const
 {
     if (SpellReagentsEntry const* reagent = GetSpellReagents(reagents))
         return reagent->ReagentCount[reagents];
+    return 0;
+}
+//SpellTotemsEntry
+uint32 SpellEntry::GetTotem(uint8 totems) const
+{
+    if (SpellTotemsEntry const* totem = GetSpellTotems(totems))
+        return totem->Totem[totems];
+    return 0;
+}
+
+uint32 SpellEntry::GetTotemCategory(uint8 totems) const
+{
+    if (SpellTotemsEntry const* totem = GetSpellTotems(totems))
+        return totem->TotemCategory[totems];
     return 0;
 }

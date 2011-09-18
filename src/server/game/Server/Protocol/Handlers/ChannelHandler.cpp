@@ -23,41 +23,27 @@ void WorldSession::HandleJoinChannel(WorldPacket& recvPacket)
 {
     sLog->outDebug(LOG_FILTER_NETWORKIO, "Opcode %u", recvPacket.GetOpcode());
 
-    uint32 channel_id;
-    uint8 _isCustom; // If channel is custom or not
-    uint8 _serverJoined; // player gets joined to channel on login (by server)
-    std::string channelname;
-    std::string pass;
+    uint32 _channelId;
+    bool _isCustom; // If channel is custom or not
+    bool _serverJoined; // player gets joined to channel on login (by server)
+    std::string _channelName;
+    std::string _password;
 
     recvPacket >> _isCustom;
     recvPacket >> _serverJoined;
 
-    recvPacket >> channel_id;
-    recvPacket >> channelname;
-    recvPacket >> pass;
+    recvPacket >> _channelId;
+    recvPacket >> _channelName;
+    recvPacket >> _password;
 
-    if (channel_id)
-    {
-        ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(channel_id);
-        if (!channel)
-            return;
-
-        AreaTableEntry const* current_zone = GetAreaEntryByAreaID(_player->GetZoneId());
-        if (!current_zone)
-            return;
-
-        if (!_player->CanJoinConstantChannelInZone(channel, current_zone))
-            return;
-    }
-
-    if (channelname.empty())
+    if (_channelName.empty())
         return;
 
     if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
     {
         cMgr->team = _player->GetTeam();
-        if (Channel* chn = cMgr->GetJoinChannel(channelname, channel_id))
-            chn->Join(_player->GetGUID(), pass.c_str());
+        if (Channel *chn = cMgr->GetJoinChannel(_channelName, _channelId))
+            chn->Join(_player->GetGUID(), _password.c_str());
     }
 }
 

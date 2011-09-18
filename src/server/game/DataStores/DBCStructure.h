@@ -1842,13 +1842,27 @@ struct SpellTargetRestrictionsEntry
     uint32    Targets;                                      // 17       m_targets
 };
 
+#define MAX_SPELL_TOTEMS            2
+
 // SpellTotems.dbc
 struct SpellTotemsEntry
 {
-    //uint32    Id;                                           // 0        m_ID
-    uint32    TotemCategory[2];                               // 1        m_requiredTotemCategoryID
-    uint32    Totem[2];                                       // 2        m_totem
+    uint32    Id;                                           // 0        m_ID
+    uint32    TotemCategory[MAX_SPELL_TOTEMS];                // 1        m_requiredTotemCategoryID
+    uint32    Totem[MAX_SPELL_TOTEMS];                        // 2        m_totem
 };
+
+struct SpellTotem
+{
+    SpellTotem()
+    {
+        totems[0] = NULL;
+        totems[1] = NULL;
+    }
+    SpellTotemsEntry const* totems[MAX_SPELL_TOTEMS];
+};
+
+typedef std::map<uint32, SpellTotem> SpellTotemMap;
 
 // Spell.dbc
 struct SpellEntry
@@ -1934,7 +1948,7 @@ struct SpellEntry
     SpellScalingEntry const* GetSpellScaling() const;
     SpellShapeshiftEntry const* GetSpellShapeshift() const;
     SpellTargetRestrictionsEntry const* GetSpellTargetRestrictions() const;
-    SpellTotemsEntry const* GetSpellTotems() const;
+    SpellTotemsEntry const* GetSpellTotems(uint8 totem) const;
 
     // single fields
     uint32 GetManaCost() const;
@@ -1992,6 +2006,9 @@ struct SpellEntry
     //SpellReagentsEntry
     uint32 GetReagent(uint8 reagent) const;
     uint32 GetReagentCount(uint8 reagent) const; 
+    //SpellTotemsEntry
+    uint32 GetTotem(uint8 totem) const;
+    uint32 GetTotemCategory(uint8 totem) const;
 
     private:
         // prevent creating custom entries (copy data from original in fact)

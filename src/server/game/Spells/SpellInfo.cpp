@@ -962,9 +962,6 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     RangeEntry = spellEntry->rangeIndex ? sSpellRangeStore.LookupEntry(spellEntry->rangeIndex) : NULL;
     Speed = spellEntry->speed;
     StackAmount = spellEntry->GetStackAmount();
-    //TODO: add GetTotem(index)
-    for (uint8 i = 0; i < 2; ++i)
-        Totem[i] = spellEntry->GetSpellTotems()->Totem[i];
     for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
         Reagent[i] = spellEntry->GetReagent(i);
     for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
@@ -972,9 +969,10 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     EquippedItemClass = spellEntry->GetEquippedItemClass();
     EquippedItemSubClassMask = spellEntry->GetEquippedItemSubClassMask();
     EquippedItemInventoryTypeMask = spellEntry->GetEquippedItemInventoryTypeMask();
-    //TODO: add TotemCategory(index)
     for (uint8 i = 0; i < 2; ++i)
-        TotemCategory[i] = spellEntry->GetSpellTotems()->TotemCategory[i];
+        Totem[i] = spellEntry->GetTotem(i);
+    for (uint8 i = 0; i < 2; ++i)
+        TotemCategory[i] = spellEntry->GetTotemCategory(i);
     for (uint8 i = 0; i < 2; ++i)
         SpellVisual[i] = spellEntry->SpellVisual[i];
     SpellIconID = spellEntry->SpellIconID;
@@ -2151,6 +2149,7 @@ uint32 SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask) 
             case xPower_FOCUS:
             case xPower_ENERGY:
             case xPower_RUNIC:
+                powerCost += int32(CalculatePctU(caster->GetMaxPower(Powers(PowerType)), ManaCostPercentage));
                 sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "CalculateManaCost: Not implemented yet!");
                 break;
             default:
