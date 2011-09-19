@@ -450,7 +450,9 @@ public:
     uint32 GetAllEffectsMechanicMask() const;
     uint32 GetEffectMechanicMask(uint8 effIndex) const;
     Mechanics GetEffectMechanic(uint8 effIndex) const;
+    uint32 GetEffectApplyAuraName(uint32 index) const;
     uint32 GetDispelMask() const;
+    uint32 GetId() const { return Id; };
     static uint32 GetDispelMask(DispelType type);
     uint32 GetExplicitTargetMask() const;
 

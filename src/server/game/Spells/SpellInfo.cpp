@@ -1810,6 +1810,13 @@ Mechanics SpellInfo::GetEffectMechanic(uint8 effIndex) const
     return MECHANIC_NONE;
 }
 
+uint32 SpellInfo::GetEffectApplyAuraName(uint32 index) const
+{
+    if (SpellEntry const* sInfo = sSpellStore.LookupEntry(GetId()))
+        return sInfo->GetEffectApplyAuraNameByIndex(index);
+    return 0;
+}
+
 uint32 SpellInfo::GetDispelMask() const
 {
     return GetDispelMask(DispelType(Dispel));
