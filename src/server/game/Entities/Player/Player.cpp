@@ -74,6 +74,7 @@
 #include "InstanceScript.h"
 #include <cmath>
 #include "AccountMgr.h"
+#include "DB2Stores.h"
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
@@ -20467,14 +20468,14 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
         ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
         for (int i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
         {
-            if (iece->reqitem[i])
-                DestroyItemCount(iece->reqitem[i], iece->reqitemcount[i], true);
+            if (iece->RequiredItem[i])
+                DestroyItemCount(iece->RequiredItem[i], iece->RequiredItem[i], true);
         }
 
-        for (int i = 0; i < MAX_ITEM_EXTENDED_COST_CURRENCIES; ++i)
+        for (int i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
         {
-            if (iece->reqcurrency[i])
-                ModifyCurrency(iece->reqcurrency[i], -int32(iece->reqcurrencycount[i]));
+            if (iece->RequiredCurrency[i])
+                ModifyCurrency(iece->RequiredCurrency[i], -int32(iece->RequiredCurrencyCount[i]));
         }
     }
 
@@ -20586,7 +20587,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         // item base price
         for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
         {
-            if (iece->reqitem[i] && !HasItemCount(iece->reqitem[i], (iece->reqitemcount[i] * count)))
+            if (iece->RequiredItem[i] && !HasItemCount(iece->RequiredItem[i], (iece->RequiredItemCount[i] * count)))
             {
                 SendEquipError(EQUIP_ERR_VENDOR_MISSING_TURNINS, NULL, NULL);
                 return false;
@@ -20594,7 +20595,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         }
 
         // check for personal arena rating requirement
-        if (GetMaxPersonalArenaRatingRequirement(iece->reqarenaslot) < iece->reqpersonalarenarating)
+        if (GetMaxPersonalArenaRatingRequirement(iece->RequiredArenaSlot) < iece->RequiredPersonalArenaRating)
         {
             // probably not the proper equip err
             SendEquipError(EQUIP_ERR_CANT_EQUIP_RANK, NULL, NULL);
@@ -24645,8 +24646,8 @@ void Player::SendRefundInfo(Item *item)
     data << uint32(item->GetPaidMoney());               // money cost    
     for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)                       // item cost data
     {
-        data << uint32(iece->reqitem[i]);
-        data << uint32(iece->reqitemcount[i]);
+        data << uint32(iece->RequiredItem[i]);
+        data << uint32(iece->RequiredItemCount[i]);
     }
     data << uint32(0);
     data << uint32(GetTotalPlayedTime() - item->GetPlayedTime());
@@ -24711,8 +24712,8 @@ void Player::RefundItem(Item *item)
     bool store_error = false;
     for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
     {
-        uint32 count = iece->reqitemcount[i];
-        uint32 itemid = iece->reqitem[i];
+        uint32 count = iece->RequiredItemCount[i];
+        uint32 itemid = iece->RequiredItem[i];
 
         if (count && itemid)
         {
@@ -24741,8 +24742,8 @@ void Player::RefundItem(Item *item)
     data << uint32(item->GetPaidMoney());               // money cost
     for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i) // item cost data
     {
-        data << uint32(iece->reqitem[i]);
-        data << uint32(iece->reqitemcount[i]);
+        data << uint32(iece->RequiredItem[i]);
+        data << uint32(iece->RequiredItemCount[i]);
     }
     GetSession()->SendPacket(&data);
 
@@ -24760,8 +24761,8 @@ void Player::RefundItem(Item *item)
     // Grant back extendedcost items
     for (uint8 i = 0; i < MAX_ITEM_EXT_COST_CURRENCIES; ++i)
     {
-        uint32 count = iece->reqitemcount[i];
-        uint32 itemid = iece->reqitem[i];
+        uint32 count = iece->RequiredItemCount[i];
+        uint32 itemid = iece->RequiredItem[i];
         if (count && itemid)
         {
             ItemPosCountVec dest;

@@ -78,7 +78,6 @@ const char ItemBagFamilyfmt[]="nx";
 const char ItemClassfmt[]="dixxx";
 const char ItemSubClassfmt[]="diixxxxxxxxxx";
 //const char ItemDisplayTemplateEntryfmt[]="nxxxxxxxxxxixxxxxxxxxxx";
-const char ItemExtendedCostEntryfmt[]="nxxiiiiiiiiiiiixiiiiiiiiiixxxxx";
 const char ItemDamagefmt[]="nfffffffi";
 //const char ItemExtendedCostEntryfmt[]="nxxiiiiiiiiiiiixiiiiiiiiiixxxxx";
 const char ItemLimitCategoryEntryfmt[]="nxii";
