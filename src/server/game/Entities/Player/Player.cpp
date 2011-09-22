@@ -16530,8 +16530,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //"totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, "
     // 46      47      48      49      50      51      52      53      54      55      56       57      
     //"health, power1, power2, power3, power4, power5, power6, power7, power8, power9, power10, power11,"
-    //58           59         60          61             62              63           64                 65 
-    //instance_id, speccount, activespec, exploredZones, equipmentCache, knownTitles, achievementPoints, actionBars FROM characters WHERE guid = '%u'", guid);
+    //58           59         60          61             62              63           64                 65         66
+    //instance_id, speccount, activespec, exploredZones, equipmentCache, knownTitles, achievementPoints, actionBars grantableLevels FROM characters WHERE guid = '%u'", guid);
     PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
     if (!result)
@@ -17150,7 +17150,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     }
 
     // RaF stuff.
-    m_grantableLevels = fields[72].GetUInt32();
+    m_grantableLevels = fields[66].GetUInt32();
     if (GetSession()->IsARecruiter() || (GetSession()->GetRecruiterId() != 0))
         SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_REFER_A_FRIEND);
 
