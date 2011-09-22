@@ -6436,8 +6436,10 @@ void ObjectMgr::LoadGameObjectTemplate()
     QueryResult result = WorldDatabase.Query("SELECT entry, type, displayId, name, IconName, castBarCaption, unk1, faction, flags, size, questItem1, questItem2, questItem3, "
     //                                            13          14          15       16     17     18     19     20     21     22     23     24     25      26      27      28
                                              "questItem4, questItem5, questItem6, data0, data1, data2, data3, data4, data5, data6, data7, data8, data9, data10, data11, data12, "
-    //                                          29      30      31      32      33      34      35      36      37      38      39      40        41
-                                             "data13, data14, data15, data16, data17, data18, data19, data20, data21, data22, data23, AIName, ScriptName "
+    //                                          29      30      31      32      33      34      35      36      37      38      39      40      41      42      43      44
+                                             "data13, data14, data15, data16, data17, data18, data19, data20, data21, data22, data23, data24, data25, data26, data27, data28, "
+   //                                           45      46      47     48     49      50
+                                             "data29, data30, data31, unk2, AIName, ScriptName "
                                              "FROM gameobject_template");
 
     if (!result)
@@ -6477,8 +6479,8 @@ void ObjectMgr::LoadGameObjectTemplate()
             got.raw.data[i] = fields[16 + i].GetUInt32();
         }
 
-        got.AIName = fields[40].GetString();
-        got.ScriptId = GetScriptId(fields[41].GetCString());
+        got.AIName = fields[49].GetString();
+        got.ScriptId = GetScriptId(fields[50].GetCString());
 
         // Checks
 
