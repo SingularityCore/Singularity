@@ -325,8 +325,11 @@ void WorldSession::HandleGameobjectReportUse(WorldPacket& recvPacket)
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 {
     uint32 spellId;
-    uint8  castCount, castFlags;
-    recvPacket >> castCount >> spellId >> castFlags;
+    uint32 glyphIndex;
+    uint8 castCount;
+    uint8 castFlags;
+
+    recvPacket >> castCount >> spellId >> castFlags >> glyphIndex;
 
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: got cast spell packet, castCount: %u, spellId: %u, castFlags: %u, data length = %u", castCount, spellId, castFlags, (uint32)recvPacket.size());
 
@@ -400,7 +403,8 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     Spell* spell = new Spell(mover, spellInfo, TRIGGERED_NONE, 0, false);
-    spell->m_cast_count = castCount;                       // set count of casts
+    spell->m_cast_count = castCount; // set count of casts 
+    spell->m_glyphIndex = glyphIndex;
     spell->prepare(&targets);
 }
 
