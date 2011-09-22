@@ -32,6 +32,19 @@ CREATE TABLE `account_data` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `character_currency`
+--
+
+DROP TABLE IF EXISTS `character_currency`;
+CREATE TABLE `character_currency` (
+  `guid` int(11) unsigned NOT NULL,
+  `currency` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `count` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `thisweek` smallint(5) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guid`,`currency`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Dumping data for table `account_data`
 --
 
@@ -1113,21 +1126,21 @@ CREATE TABLE `characters` (
   `playerBytes` int(10) unsigned NOT NULL DEFAULT '0',
   `playerBytes2` int(10) unsigned NOT NULL DEFAULT '0',
   `playerFlags` int(10) unsigned NOT NULL DEFAULT '0',
-  `position_x` float NOT NULL DEFAULT '0',
-  `position_y` float NOT NULL DEFAULT '0',
-  `position_z` float NOT NULL DEFAULT '0',
   `map` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Map Identifier',
   `instance_id` int(10) unsigned NOT NULL DEFAULT '0',
   `instance_mode_mask` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `position_x` float NOT NULL DEFAULT '0',
+  `position_y` float NOT NULL DEFAULT '0',
+  `position_z` float NOT NULL DEFAULT '0',
   `orientation` float NOT NULL DEFAULT '0',
   `taximask` text NOT NULL,
   `online` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `cinematic` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `totaltime` int(10) unsigned NOT NULL DEFAULT '0',
   `leveltime` int(10) unsigned NOT NULL DEFAULT '0',
+  `rest_bonus` float NOT NULL DEFAULT '0',
   `logout_time` int(10) unsigned NOT NULL DEFAULT '0',
   `is_logout_resting` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `rest_bonus` float NOT NULL DEFAULT '0',
   `resettalents_cost` int(10) unsigned NOT NULL DEFAULT '0',
   `resettalents_time` int(10) unsigned NOT NULL DEFAULT '0',
   `trans_x` float NOT NULL DEFAULT '0',
@@ -1141,10 +1154,6 @@ CREATE TABLE `characters` (
   `zone` smallint(5) unsigned NOT NULL DEFAULT '0',
   `death_expire_time` int(10) unsigned NOT NULL DEFAULT '0',
   `taxi_path` text,
-  `arenaPoints` int(10) unsigned NOT NULL DEFAULT '0',
-  `totalHonorPoints` int(10) unsigned NOT NULL DEFAULT '0',
-  `todayHonorPoints` int(10) unsigned NOT NULL DEFAULT '0',
-  `yesterdayHonorPoints` int(10) unsigned NOT NULL DEFAULT '0',
   `totalKills` int(10) unsigned NOT NULL DEFAULT '0',
   `todayKills` smallint(5) unsigned NOT NULL DEFAULT '0',
   `yesterdayKills` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -1160,15 +1169,19 @@ CREATE TABLE `characters` (
   `power5` int(10) unsigned NOT NULL DEFAULT '0',
   `power6` int(10) unsigned NOT NULL DEFAULT '0',
   `power7` int(10) unsigned NOT NULL DEFAULT '0',
+  `power8` int(10) unsigned NOT NULL DEFAULT '0',
+  `power9` int(10) unsigned NOT NULL DEFAULT '0',
+  `power10` int(10) unsigned NOT NULL DEFAULT '0',
+  `power11` int(10) unsigned NOT NULL DEFAULT '0',
   `latency` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `speccount` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `activespec` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `exploredZones` longtext,
   `equipmentCache` longtext,
-  `ammoId` int(10) unsigned NOT NULL DEFAULT '0',
   `knownTitles` longtext,
+  `achievementPoints` smallint(5) unsigned NOT NULL DEFAULT '0',
   `actionBars` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `grantableLevels` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `guildId` int(10) unsigned NOT NULL DEFAULT '0',
   `deleteInfos_Account` int(10) unsigned DEFAULT NULL,
   `deleteInfos_Name` varchar(12) DEFAULT NULL,
   `deleteDate` int(10) unsigned DEFAULT NULL,
