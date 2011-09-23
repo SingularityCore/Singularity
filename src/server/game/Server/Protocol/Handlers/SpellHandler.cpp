@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
  * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
@@ -331,7 +332,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     recvPacket >> castCount >> spellId >> castFlags >> glyphIndex;
 
-    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: got cast spell packet, castCount: %u, spellId: %u, castFlags: %u, data length = %u", castCount, spellId, castFlags, (uint32)recvPacket.size());
+    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: got cast spell packet, castCount: %u, spellId: %u, castFlags: %u, glyphIndex %u data length = %u", castCount, spellId, castFlags, glyphIndex, (uint32)recvPacket.size());
 
     // ignore for remote control state (for player case)
     Unit* mover = _player->m_mover;
