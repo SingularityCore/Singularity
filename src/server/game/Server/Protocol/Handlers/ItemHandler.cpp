@@ -743,26 +743,27 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
     VendorItemData const* items = vendor->GetVendorItems();
     if (!items)
     {
-        WorldPacket data(SMSG_LIST_INVENTORY, 8 + 1 + 1);
-        data << uint64(vendorGuid);
+        WorldPacket data(SMSG_LIST_INVENTORY, 1 + 4 + 1 + 2);
+        data << uint8(0);
         data << uint8(0);                                   // count == 0, next will be error code
         data << uint8(0);                                   // "Vendor has no inventory"
         SendPacket(&data);
         return;
     }
 
-    uint8 itemCount = items->GetItemCount();
+    uint32 itemCount = items->GetItemCount();
     uint8 count = 0;
 
-    WorldPacket data(SMSG_LIST_INVENTORY, 8 + 1 + itemCount * 8 * 4);
-    data << uint64(vendorGuid);
+    WorldPacket data(SMSG_LIST_INVENTORY, 1 + 4 + 1 + itemCount * 10 * 10 + 2);
+    data << uint8(0);
 
     size_t countPos = data.wpos();
     data << uint8(count);
+    data << uint32(0);
 
     float discountMod = _player->GetReputationPriceDiscount(vendor);
 
-    for (uint8 slot = 0; slot < itemCount; ++slot)
+    for (uint32 slot = 0; slot < itemCount; ++slot)
     {
         if (VendorItem const* item = items->GetItem(slot))
         {
@@ -781,6 +782,8 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
                     continue;
 
                 ++count;
+                if (count == 150)
+                    break;
 
                 // reputation discount
                 int32 price = item->IsGoldRequired(itemTemplate) ? uint32(floor(itemTemplate->BuyPrice * discountMod)) : 0;
@@ -793,6 +796,8 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
                 data << uint32(itemTemplate->MaxDurability);
                 data << uint32(itemTemplate->BuyCount);
                 data << uint32(item->ExtendedCost);
+                data << uint32(0); // unk 4.0.1
+                data << uint32(1); // unknow value 4.0.1, always 1
             }
         }
     }
