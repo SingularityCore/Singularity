@@ -743,8 +743,8 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
     VendorItemData const* items = vendor->GetVendorItems();
     if (!items)
     {
-        WorldPacket data(SMSG_LIST_INVENTORY, 1 + 4 + 1 + 2);
-        data << uint8(0);
+        WorldPacket data(SMSG_LIST_INVENTORY, 4 + 1 + 1 + 1);
+        data << uint32(0);                                  // last visited vendor
         data << uint8(0);                                   // count == 0, next will be error code
         data << uint8(0);                                   // "Vendor has no inventory"
         SendPacket(&data);
@@ -754,7 +754,7 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
     uint32 itemCount = items->GetItemCount();
     uint8 count = 0;
 
-    WorldPacket data(SMSG_LIST_INVENTORY, 1 + 4 + 1 + itemCount * 10 * 10 + 2);
+    WorldPacket data(SMSG_LIST_INVENTORY, 1 + 1 + 4 + itemCount * 10 * 10 + 2);
     data << uint8(0);
 
     size_t countPos = data.wpos();
@@ -788,11 +788,11 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
                 // reputation discount
                 int32 price = item->IsGoldRequired(itemTemplate) ? uint32(floor(itemTemplate->BuyPrice * discountMod)) : 0;
 
+                data << item->item;
                 data << uint32(slot + 1);       // client expects counting to start at 1
-                data << uint32(item->item);
+                data << uint32(price);
                 data << uint32(itemTemplate->DisplayInfoID);
                 data << int32(leftInStock);
-                data << uint32(price);
                 data << uint32(itemTemplate->MaxDurability);
                 data << uint32(itemTemplate->BuyCount);
                 data << uint32(item->ExtendedCost);
