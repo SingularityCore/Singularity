@@ -166,7 +166,7 @@ struct ManaVoidSelector : public std::unary_function<Unit*, bool>
 
         bool operator()(Unit* unit) const
         {
-            return unit->getPowerType() == POWER_MANA && _source->GetDistance(unit) > 15.0f;
+            return unit->getPowerType() == xPower_MANA && _source->GetDistance(unit) > 15.0f;
         }
 
         WorldObject const* _source;

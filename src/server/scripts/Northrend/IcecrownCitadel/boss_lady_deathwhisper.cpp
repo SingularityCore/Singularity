@@ -225,7 +225,7 @@ class boss_lady_deathwhisper : public CreatureScript
             void Reset()
             {
                 _Reset();
-                me->SetPower(POWER_MANA, me->GetMaxPower(POWER_MANA));
+                me->SetPower(xPower_MANA, me->GetMaxPower(xPower_MANA));
                 events.SetPhase(PHASE_ONE);
                 _waveCounter = 0;
                 _nextVengefulShadeTargetGUID = 0;
@@ -357,13 +357,13 @@ class boss_lady_deathwhisper : public CreatureScript
             void DamageTaken(Unit* /*damageDealer*/, uint32& damage)
             {
                 // phase transition
-                if (events.GetPhaseMask() & PHASE_ONE_MASK && damage > me->GetPower(POWER_MANA))
+                if (events.GetPhaseMask() & PHASE_ONE_MASK && damage > me->GetPower(xPower_MANA))
                 {
                     Talk(SAY_PHASE_2);
                     Talk(EMOTE_PHASE_2);
                     DoStartMovement(me->getVictim());
-                    damage -= me->GetPower(POWER_MANA);
-                    me->SetPower(POWER_MANA, 0);
+                    damage -= me->GetPower(xPower_MANA);
+                    me->SetPower(xPower_MANA, 0);
                     me->RemoveAurasDueToSpell(SPELL_MANA_BARRIER);
                     events.SetPhase(PHASE_TWO);
                     events.ScheduleEvent(EVENT_P2_FROSTBOLT, urand(10000, 12000), 0, PHASE_TWO);
@@ -970,7 +970,7 @@ class spell_deathwhisper_mana_barrier : public SpellScriptLoader
                 {
                     int32 missingHealth = int32(caster->GetMaxHealth() - caster->GetHealth());
                     caster->ModifyHealth(missingHealth);
-                    caster->ModifyPower(POWER_MANA, -missingHealth);
+                    caster->ModifyPower(xPower_MANA, -missingHealth);
                 }
             }
 

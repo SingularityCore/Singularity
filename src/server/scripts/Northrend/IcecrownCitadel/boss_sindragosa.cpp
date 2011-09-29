@@ -1005,7 +1005,7 @@ class UnchainedMagicTargetSelector
 
         bool operator()(Unit* unit)
         {
-            return unit->getPowerType() != POWER_MANA;
+            return unit->getPowerType() != xPower_MANA;
         }
 };
 

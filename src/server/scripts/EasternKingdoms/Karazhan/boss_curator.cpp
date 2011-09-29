@@ -142,13 +142,13 @@ public:
                     }
 
                     //Reduce Mana by 10% of max health
-                    if (int32 mana = me->GetMaxPower(POWER_MANA))
+                    if (int32 mana = me->GetMaxPower(xPower_MANA))
                     {
                         mana /= 10;
-                        me->ModifyPower(POWER_MANA, -mana);
+                        me->ModifyPower(xPower_MANA, -mana);
 
                         //if this get's us below 10%, then we evocate (the 10th should be summoned now)
-                        if (me->GetPower(POWER_MANA)*100 / me->GetMaxPower(POWER_MANA) < 10)
+                        if (me->GetPower(xPower_MANA)*100 / me->GetMaxPower(xPower_MANA) < 10)
                         {
                             DoScriptText(SAY_EVOCATE, me);
                             me->InterruptNonMeleeSpells(false);

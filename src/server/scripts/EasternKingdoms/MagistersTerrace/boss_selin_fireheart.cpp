@@ -248,8 +248,8 @@ public:
 
             if (!DrainingCrystal)
             {
-                uint32 maxPowerMana = me->GetMaxPower(POWER_MANA);
-                if (maxPowerMana && ((me->GetPower(POWER_MANA)*100 / maxPowerMana) < 10))
+                uint32 maxPowerMana = me->GetMaxPower(xPower_MANA);
+                if (maxPowerMana && ((me->GetPower(xPower_MANA)*100 / maxPowerMana) < 10))
                 {
                     if (DrainLifeTimer <= diff)
                     {
@@ -278,8 +278,8 @@ public:
                 } else FelExplosionTimer -= diff;
 
                 // If below 10% mana, start recharging
-                maxPowerMana = me->GetMaxPower(POWER_MANA);
-                if (maxPowerMana && ((me->GetPower(POWER_MANA)*100 / maxPowerMana) < 10))
+                maxPowerMana = me->GetMaxPower(xPower_MANA);
+                if (maxPowerMana && ((me->GetPower(xPower_MANA)*100 / maxPowerMana) < 10))
                 {
                     if (DrainCrystalTimer <= diff)
                     {

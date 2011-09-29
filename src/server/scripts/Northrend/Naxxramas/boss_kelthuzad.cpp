@@ -607,8 +607,8 @@ public:
                             for (std::list<HostileReference*>::const_iterator itr = threatList->begin(); itr != threatList->end(); ++itr)
                             {
                                 if ((*itr)->getTarget()->GetTypeId() == TYPEID_PLAYER
-                                    && (*itr)->getTarget()->getPowerType() == POWER_MANA
-                                    && (*itr)->getTarget()->GetPower(POWER_MANA))
+                                    && (*itr)->getTarget()->getPowerType() == xPower_MANA
+                                    && (*itr)->getTarget()->GetPower(xPower_MANA))
                                     unitList.push_back((*itr)->getTarget());
                             }
 

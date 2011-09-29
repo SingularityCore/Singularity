@@ -64,7 +64,7 @@ class boss_moam : public CreatureScript
             void Reset()
             {
                 _Reset();
-                me->SetPower(POWER_MANA, 0);
+                me->SetPower(xPower_MANA, 0);
                 _isStonePhase = false;
                 events.ScheduleEvent(EVENT_STONE_PHASE, 90000);
                 //events.ScheduleEvent(EVENT_WIDE_SLASH, 11000);
@@ -111,12 +111,12 @@ class boss_moam : public CreatureScript
 
                 events.Update(diff);
 
-                if (me->GetPower(POWER_MANA) == me->GetMaxPower(POWER_MANA))
+                if (me->GetPower(xPower_MANA) == me->GetMaxPower(xPower_MANA))
                 {
                     if (_isStonePhase)
                         DoAction(ACTION_STONE_PHASE_END);
                     DoCastAOE(SPELL_ARCANE_ERUPTION);
-                    me->SetPower(POWER_MANA, 0);
+                    me->SetPower(xPower_MANA, 0);
                 }
 
                 if (_isStonePhase)
@@ -143,7 +143,7 @@ class boss_moam : public CreatureScript
                             {
                                 const std::list<HostileReference*>& threatlist = me->getThreatManager().getThreatList();
                                 for (std::list<HostileReference*>::const_iterator itr = threatlist.begin(); itr != threatlist.end(); ++itr)
-                                    if ((*itr)->getTarget()->GetTypeId() == TYPEID_PLAYER && (*itr)->getTarget()->getPowerType() == POWER_MANA)
+                                    if ((*itr)->getTarget()->GetTypeId() == TYPEID_PLAYER && (*itr)->getTarget()->getPowerType() == xPower_MANA)
                                         targetList.push_back((*itr)->getTarget());
                             }
 

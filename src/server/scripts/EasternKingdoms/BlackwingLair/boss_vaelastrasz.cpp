@@ -213,11 +213,11 @@ public:
                 Unit* target = NULL;
 
                 uint8 i = 0;
-                while (i < 3)                                   // max 3 tries to get a random target with power_mana
+                while (i < 3)                                   // max 3 tries to get a random target with xPower_MANA
                 {
                     ++i;
                     target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100, true); //not aggro leader
-                    if (target && target->getPowerType() == POWER_MANA)
+                    if (target && target->getPowerType() == xPower_MANA)
                             i = 3;
                 }
                 if (target)                                     // cast on self (see below)

@@ -69,9 +69,9 @@ public:
         player->PlayerTalkClass->ClearMenus();
         if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
         {
-            creature->setPowerType(POWER_MANA);
-            creature->SetMaxPower(POWER_MANA, 200);             //set a "fake" mana value, we can't depend on database doing it in this case
-            creature->SetPower(POWER_MANA, 200);
+            creature->setPowerType(xPower_MANA);
+            creature->SetMaxPower(xPower_MANA, 200);             //set a "fake" mana value, we can't depend on database doing it in this case
+            creature->SetPower(xPower_MANA, 200);
 
             if (creature->GetEntry() == 17900)                //check which Creature we are dealing with
             {
