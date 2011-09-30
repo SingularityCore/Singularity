@@ -187,6 +187,7 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( SMSG_GOSSIP_MESSAGE,                          STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_GOSSIP_COMPLETE,                         STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_NPC_TEXT_UPDATE,                         STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
+    DEFINE_OPCODE_HANDLER( CMSG_QUESTGIVER_HELLO,                        STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleQuestgiverHelloOpcode     );
     DEFINE_OPCODE_HANDLER( CMSG_QUESTGIVER_STATUS_QUERY,                 STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleQuestgiverStatusQueryOpcode);
     DEFINE_OPCODE_HANDLER( SMSG_QUESTGIVER_STATUS,                       STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_QUESTGIVER_QUEST_LIST,                   STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );

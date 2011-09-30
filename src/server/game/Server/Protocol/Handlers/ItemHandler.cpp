@@ -743,10 +743,10 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
     VendorItemData const* items = vendor->GetVendorItems();
     if (!items)
     {
-        WorldPacket data(SMSG_LIST_INVENTORY, 4 + 1 + 1 + 1);
+        WorldPacket data(SMSG_LIST_INVENTORY, 4 + 1 + 1);
         data << uint32(0);                                  // last visited vendor
         data << uint8(0);                                   // count == 0, next will be error code
-        data << uint8(0);                                   // "Vendor has no inventory"
+        data << uint8(0);                                   // some kind of bool set 1 to open window.
         SendPacket(&data);
         return;
     }
