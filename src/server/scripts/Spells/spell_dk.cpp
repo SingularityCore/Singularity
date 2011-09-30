@@ -660,12 +660,12 @@ void AddSC_deathknight_spell_scripts()
     new spell_dk_anti_magic_shell_raid();
     new spell_dk_anti_magic_shell_self();
     new spell_dk_anti_magic_zone();
-    new spell_dk_corpse_explosion();
+    //new spell_dk_corpse_explosion();
     new spell_dk_ghoul_explode();
     new spell_dk_death_gate();
     new spell_dk_death_pact();
     new spell_dk_scourge_strike();
-    new spell_dk_spell_deflection();
+    //new spell_dk_spell_deflection();
     new spell_dk_blood_boil();
     new spell_dk_will_of_the_necropolis();
     new spell_dk_improved_blood_presence();

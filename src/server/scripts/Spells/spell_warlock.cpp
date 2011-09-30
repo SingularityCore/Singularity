@@ -288,5 +288,5 @@ void AddSC_warlock_spell_scripts()
     new spell_warl_create_healthstone();
     new spell_warl_everlasting_affliction();
     new spell_warl_seed_of_corruption();
-    new spell_warl_banish();
+    //new spell_warl_banish();
 }

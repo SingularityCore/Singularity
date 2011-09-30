@@ -731,7 +731,7 @@ void AddSC_emerald_dragons()
 
     // dragon spellscripts
     new spell_dream_fog_sleep();
-    new spell_mark_of_nature();
+    //new spell_mark_of_nature();
 
     // dragons
     new boss_ysondre();

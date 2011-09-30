@@ -299,10 +299,10 @@ class spell_dru_starfall_aoe : public SpellScriptLoader
 
 void AddSC_druid_spell_scripts()
 {
-    new spell_dru_glyph_of_starfire();
+    //new spell_dru_glyph_of_starfire();
     new spell_dru_moonkin_form_passive();
-    new spell_dru_primal_tenacity();
+    //new spell_dru_primal_tenacity();
     new spell_dru_savage_defense();
     new spell_dru_t10_restoration_4p_bonus();
-    new spell_dru_starfall_aoe();
+    //new spell_dru_starfall_aoe();
 }
