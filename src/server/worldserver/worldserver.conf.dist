@@ -56,7 +56,7 @@ RealmID = 1
 #    DataDir
 #        Description: Data directory setting.
 #        Important:   DataDir needs to be quoted, as the string might contain space characters.
-#        Example:     "@prefix@/share/trinitycore"
+#        Example:     "@prefix@/share/singularitycore"
 #        Default:     "."
 
 DataDir = "."
@@ -81,13 +81,13 @@ LogsDir = ""
 #                                                                 section my.ini)
 #                     ".;/path/to/unix_socket;username;password;database" - (use Unix sockets on
 #                                                                           Unix/Linux)
-#        Default:     "127.0.0.1;3306;trinity;trinity;auth"       - (LoginDatabaseInfo)
-#                     "127.0.0.1;3306;trinity;trinity;world"      - (WorldDatabaseInfo)
-#                     "127.0.0.1;3306;trinity;trinity;characters" - (CharacterDatabaseInfo)
+#        Default:     "127.0.0.1;3306;singularity;singularity;auth"       - (LoginDatabaseInfo)
+#                     "127.0.0.1;3306;singularity;singularity;world"      - (WorldDatabaseInfo)
+#                     "127.0.0.1;3306;singularity;singularity;characters" - (CharacterDatabaseInfo)
 
-LoginDatabaseInfo     = "127.0.0.1;3306;trinity;trinity;auth"
-WorldDatabaseInfo     = "127.0.0.1;3306;trinity;trinity;world"
-CharacterDatabaseInfo = "127.0.0.1;3306;trinity;trinity;characters"
+LoginDatabaseInfo     = "127.0.0.1;3306;singularity;singularity;auth"
+WorldDatabaseInfo     = "127.0.0.1;3306;singularity;singularity;world"
+CharacterDatabaseInfo = "127.0.0.1;3306;singularity;singularity;characters"
 
 #
 #    LoginDatabase.WorkerThreads
@@ -273,8 +273,8 @@ PlayerSave.Stats.SaveOnlyOnLogout = 1
 #                     1 - (Enabled, vmap.enableHeight)
 #                     0 - (Disabled)
 
-vmap.enableLOS    = 1
-vmap.enableHeight = 1
+vmap.enableLOS    = 0
+vmap.enableHeight = 0
 
 #
 #    vmap.ignoreSpellIds
@@ -291,7 +291,7 @@ vmap.ignoreSpellIds = "7720"
 #        Default:     1 - (Enabled, each pet attack will be checked for line of sight)
 #                     0 - (Disabled, somewhat less CPU usage)
 
-vmap.petLOS = 1
+vmap.petLOS = 0
 
 #
 #    vmap.enableIndoorCheck
@@ -299,7 +299,7 @@ vmap.petLOS = 1
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled, somewhat less CPU usage)
 
-vmap.enableIndoorCheck = 1
+vmap.enableIndoorCheck = 0
 
 #
 #    DetectPosCollision
@@ -308,7 +308,7 @@ vmap.enableIndoorCheck = 1
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled, Less position precision but less CPU usage)
 
-DetectPosCollision = 1
+DetectPosCollision = 0
 
 #
 #    TargetPosRecalculateRange
@@ -910,11 +910,12 @@ DeclinedNames = 0
 #    Expansion
 #        Description: Allow server to use content from expansions. Checks for expansion-related
 #                     map files, client compatibility and class/race character creation.
-#        Default:     2 - (Expansion 2)
+#        Default:     3 - (Expandion 3)
+                      2 - (Expansion 2)
 #                     1 - (Expansion 1)
 #                     0 - (Disabled, Ignore and disable expansion content (maps, races, classes)
 
-Expansion = 2
+Expansion = 3
 
 #
 #    MinPlayerName
@@ -1359,10 +1360,10 @@ BeepAtStart = 1
 #    Motd
 #        Description: Message of the Day, displayed at login.
 #                     Use '@' for a newline and be sure to escape special characters.
-#        Example:     "Welcome to John\'s Server@This server runs on Trinity Core."
-#        Default:     "Welcome to a Trinity Core server."
+#        Example:     "Welcome to William\'s Server@This server runs on Singularity Core."
+#        Default:     "Welcome to a Singularity Core server."
 
-Motd = "Welcome to a Trinity Core server."
+Motd = "Welcome to a Singularity Core server."
 
 #
 #    Server.LoginInfo

@@ -585,7 +585,7 @@ void CliRunnable::run()
         char commandbuf[256];
         command_str = fgets(commandbuf, sizeof(commandbuf), stdin);
         #else
-        command_str = readline("TC>");
+        command_str = readline("SC>");
         rl_bind_key('\t', rl_complete);
         #endif
         if (command_str != NULL)
@@ -600,7 +600,7 @@ void CliRunnable::run()
             if (!*command_str)
             {
                 #if PLATFORM == PLATFORM_WINDOWS
-                printf("TC>");
+                printf("SC>");
                 #endif
                 continue;
             }
@@ -609,7 +609,7 @@ void CliRunnable::run()
             if (!consoleToUtf8(command_str, command))         // convert from console encoding to utf8
             {
                 #if PLATFORM == PLATFORM_WINDOWS
-                printf("TC>");
+                printf("SC>");
                 #endif
                 continue;
             }
