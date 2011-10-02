@@ -127,15 +127,17 @@ int Master::Run()
     sLog->outString("%s (worldserver-daemon)", _FULLVERSION);
     sLog->outString("<Ctrl-C> to stop.\n");
 
-    sLog->outString(" ______                       __");
-    sLog->outString("/\\__  _\\       __          __/\\ \\__");
-    sLog->outString("\\/_/\\ \\/ _ __ /\\_\\    ___ /\\_\\ \\ ,_\\  __  __");
-    sLog->outString("   \\ \\ \\/\\`'__\\/\\ \\ /' _ `\\/\\ \\ \\ \\/ /\\ \\/\\ \\");
-    sLog->outString("    \\ \\ \\ \\ \\/ \\ \\ \\/\\ \\/\\ \\ \\ \\ \\ \\_\\ \\ \\_\\ \\");
-    sLog->outString("     \\ \\_\\ \\_\\  \\ \\_\\ \\_\\ \\_\\ \\_\\ \\__\\\\/`____ \\");
-    sLog->outString("      \\/_/\\/_/   \\/_/\\/_/\\/_/\\/_/\\/__/ `/___/> \\");
-    sLog->outString("                                 C O R E  /\\___/");
-    sLog->outString("http://TrinityCore.org                    \\/__/\n");
+    sLog->outString(" _______");
+    sLog->outString("/\\   ___\\                             __                       __");
+    sLog->outString("\\ \\  \\___  __                        /\\ \\                   __/\\ \\__");
+    sLog->outString(" \\ \\___  \\/\\_\\    ___   ______  __  _\\ \\ \\  ______    _____/\\_\\ \\  _\\  __  __ ");
+    sLog->outString("  \\___ \\  \\/\\ \\ /  _  \\/\\  __ \\/\\ \\/\\ \\ \\ \\/\\  __ \\  /\\  __\\/\\ \\ \\ \\  /\\ \\ \\ \\ ");
+    sLog->outString("    __\\_\\  \\ \\ \\/\\ \\/\\ \\ \\ \\_\\ \\ \\ \\_\\ \\ \\ \\ \\ \\_\\ \\_\\ \\ \\_/\\ \\ \\ \\ \\_\\ \\ \\_\\ \\");
+    sLog->outString("   /\\_______\\ \\_\\ \\_\\ \\_\\ \\____ \\ \\_____\\ \\_\\ \\_______\\ \\_\\  \\ \\_\\ \\__\\\\ \\____ \\");
+    sLog->outString("   \\/_______/\\/_/\\/_/\\/_/\\/___/> \\/_____/\\/_/\\/_______/\\/_/   \\/_/\\/__/ \\/___/> \\");
+    sLog->outString("http://singularitycore.org  /\\___/                              C O R E    /\\___/");
+    sLog->outString("                            \\/__/                                          \\/__/\n");
+
 
 #ifdef USE_SFMT_FOR_RNG
     sLog->outString("\n");
