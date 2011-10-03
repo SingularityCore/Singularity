@@ -329,7 +329,7 @@ enum Opcodes
     CMSG_QUESTGIVER_STATUS_QUERY                     = 0x07223, // 14333
     CMSG_QUESTLOG_REMOVE_QUEST                       = 0x03A3F, // 14333
     CMSG_QUEST_POI_QUERY                             = 0x0F2EE, // 14333
-    CMSG_QUEST_CONFIRM_ACCEPT                        = 0x0A2FA, // 14480
+    CMSG_QUEST_CONFIRM_ACCEPT                        = 0x0F2B7, // 14480
     CMSG_READY_FOR_ACCOUNT_DATA_TIMES                = 0x0F226, // 14480
     CMSG_READ_ITEM                                   = 0x06A67, // 14333
     CMSG_REALM_SPLIT                                 = 0x0B6E2, // 14333
