@@ -152,12 +152,15 @@ void WorldSession::SendTrainerList(uint64 guid, const std::string& strTitle)
         return;
     }
 
-    WorldPacket data(SMSG_TRAINER_LIST, 8+4+4+trainer_spells->spellList.size()*38 + strTitle.size()+1);
+    WorldPacket data(SMSG_TRAINER_LIST, 8 + 4 + 4 + 4 + trainer_spells->spellList.size()*38 + strTitle.size() + 1);
     data << guid;
     data << uint32(trainer_spells->trainerType);
+    data << uint32(0);
 
-    size_t count_pos = data.wpos();
-    data << uint32(trainer_spells->spellList.size());
+    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: SendTrainerList -  (GUID: %u) trainer_spells->trainerType = %u)", GUID_LOPART(guid), trainer_spells->trainerType);
+
+    size_t count_pos = data.wpos();    
+    data << uint32(trainer_spells->spellList.size());    
 
     // reputation discount
     float fDiscountMod = _player->GetReputationPriceDiscount(unit);
@@ -191,11 +194,10 @@ void WorldSession::SendTrainerList(uint64 guid, const std::string& strTitle)
         data << uint32(tSpell->spell);                      // learned spell (or cast-spell in profession case)
         data << uint8(state == TRAINER_SPELL_GREEN_DISABLED ? TRAINER_SPELL_GREEN : state);
         data << uint32(floor(tSpell->spellCost * fDiscountMod));
-
+        data << uint8(tSpell->reqLevel);
         data << uint32(primary_prof_first_rank && can_learn_primary_prof ? 1 : 0);
                                                             // primary prof. learn confirmation dialog
-        data << uint32(primary_prof_first_rank ? 1 : 0);    // must be equal prev. field to have learn button in enabled state
-        data << uint8(tSpell->reqLevel);
+        data << uint32(primary_prof_first_rank ? 1 : 0);    // must be equal prev. field to have learn button in enabled state        
         data << uint32(tSpell->reqSkill);
         data << uint32(tSpell->reqSkillValue);
         //prev + req or req + 0
@@ -238,10 +240,11 @@ void WorldSession::SendTrainerList(uint64 guid, const std::string& strTitle)
 void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recv_data)
 {
     uint64 guid;
+    uint32 unk = 0;
     uint32 spellId = 0;
 
-    recv_data >> guid >> spellId;
-    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_TRAINER_BUY_SPELL NpcGUID=%u, learn spell id is: %u", uint32(GUID_LOPART(guid)), spellId);
+    recv_data >> guid >> unk >> spellId;
+    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_TRAINER_BUY_SPELL NpcGUID=%u, learn spell id is: %u unk is: %u", uint32(GUID_LOPART(guid)), spellId, unk);
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TRAINER);
     if (!unit)
@@ -269,6 +272,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recv_data)
 
     // can't be learn, cheat? Or double learn with lags...
     if (_player->GetTrainerSpellState(trainer_spell) != TRAINER_SPELL_GREEN)
+        sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: HandleTrainerBuySpellOpcode - Unit (GUID: %u) has trainer spell state not green state is %u.", uint32(GUID_LOPART(guid)), _player->GetTrainerSpellState(trainer_spell));
         return;
 
     // apply reputation discount

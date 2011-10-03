@@ -487,11 +487,13 @@ void WorldSession::HandleQuestConfirmAccept(WorldPacket& recv_data)
 
 void WorldSession::HandleQuestgiverCompleteQuest(WorldPacket& recv_data)
 {
-    uint32 quest;
     uint64 guid;
-    recv_data >> guid >> quest;
+    uint32 quest;
+    uint8 unk;
 
-    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_QUESTGIVER_COMPLETE_QUEST npc = %u, quest = %u", uint32(GUID_LOPART(guid)), quest);
+    recv_data >> guid >> quest >> unk;
+
+    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_QUESTGIVER_COMPLETE_QUEST npc = %u, quest = %u, unk = %u", uint32(GUID_LOPART(guid)), quest, unk);
 
     Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid, TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT);
     if (!pObject || !pObject->hasInvolvedQuest(quest))

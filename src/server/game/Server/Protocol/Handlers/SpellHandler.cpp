@@ -330,7 +330,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     uint8 castCount;
     uint8 castFlags;
 
-    recvPacket >> castCount >> spellId >> castFlags >> glyphIndex;
+    recvPacket >> castCount >> spellId >> glyphIndex >> castFlags;
 
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: got cast spell packet, castCount: %u, spellId: %u, castFlags: %u, glyphIndex %u data length = %u", castCount, spellId, castFlags, glyphIndex, (uint32)recvPacket.size());
 
