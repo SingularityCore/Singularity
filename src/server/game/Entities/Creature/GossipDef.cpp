@@ -385,19 +385,23 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const *quest, uint64 npcGUID, 
         data << int32(quest->RewRepValue[i]);
 
     data << int32(quest->GetRewSpellCast());
+    data << uint32(0);
+
+    for(int i = 0; i < 4; i++)
+    {
+        data << uint32(0);
+        data << uint32(0);
+    }
+
+    data << uint32(0);
+    //data << uint32(0);
+
     data << uint32(QUEST_EMOTE_COUNT);
     for (uint32 i = 0; i < QUEST_EMOTE_COUNT; ++i)
     {
         data << uint32(quest->DetailsEmote[i]);
         data << uint32(quest->DetailsEmoteDelay[i]);       // DetailsEmoteDelay (in ms)
     }
-
-    data << uint32(0);                                      //unk
-    uint32(0);                                              //the return of sub_54F440 264 bytes total
-    //end call sub_54F440((int)&Dst, v1)
-    uint32(0);                                              // value of sub_54F440 268 bytes memset in client set
-
-    uint32(0);                                              //unk
 
     _session->SendPacket(&data);
 
