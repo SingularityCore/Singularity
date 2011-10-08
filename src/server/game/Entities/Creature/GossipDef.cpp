@@ -387,7 +387,7 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const *quest, uint64 npcGUID, 
     data << int32(quest->GetRewSpellCast());
     data << uint32(0);
 
-    for(int i = 0; i < QUEST_CURRENCY_COUNT; i++)
+    for (int i = 0; i < QUEST_CURRENCY_COUNT; i++)
     {
         data << uint32(0);
         data << uint32(0);
