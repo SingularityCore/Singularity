@@ -7840,7 +7840,7 @@ bool ObjectMgr::LoadTrinityStrings(char const* table, int32 min_value, int32 max
     } while (result->NextRow());
 
     if (min_value == MIN_TRINITY_STRING_ID)
-        sLog->outString(">> Loaded %u Trinity strings from table %s in %u ms", count, table, GetMSTimeDiffToNow(oldMSTime));
+        sLog->outString(">> Loaded %u Singularity strings from table %s in %u ms", count, table, GetMSTimeDiffToNow(oldMSTime));
     else
         sLog->outString(">> Loaded %u string templates from %s in %u ms", count, table, GetMSTimeDiffToNow(oldMSTime));
 
@@ -7859,9 +7859,9 @@ const char *ObjectMgr::GetTrinityString(int32 entry, LocaleConstant locale_idx) 
     }
 
     if (entry > 0)
-        sLog->outErrorDb("Entry %i not found in `trinity_string` table.", entry);
+        sLog->outErrorDb("Entry %i not found in `singularity_string` table.", entry);
     else
-        sLog->outErrorDb("Trinity string entry %i not found in DB.", entry);
+        sLog->outErrorDb("Singularity string entry %i not found in DB.", entry);
     return "<error>";
 }
 
