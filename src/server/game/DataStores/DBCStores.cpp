@@ -434,9 +434,9 @@ void LoadDBCStores(const std::string& dataPath)
     LoadDBC(availableDbcLocales, bad_dbc_files, sSpellStore,                  dbcPath, "Spell.dbc", &CustomSpellEntryfmt, &CustomSpellEntryIndex);
     for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
     {
-        SpellEntry const * spell = sSpellStore.LookupEntry(i);
-        if (spell && spell->GetCategory())
-            sSpellCategoryStore[spell->GetCategory()].insert(i);
+        SpellCategoriesEntry const* spell = sSpellCategoriesStore.LookupEntry(i);
+        if (spell && spell->Category)
+            sSpellCategoryStore[spell->Category].insert(i);
     }
 
     for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
@@ -447,24 +447,27 @@ void LoadDBCStores(const std::string& dataPath)
             continue;
 
         SpellEntry const* spellInfo = sSpellStore.LookupEntry(skillLine->spellId);
-
         if (spellInfo && spellInfo->Attributes & SPELL_ATTR0_PASSIVE)
         {
             for (uint32 i = 1; i < sCreatureFamilyStore.GetNumRows(); ++i)
             {
+                SpellLevelsEntry const* levels = sSpellLevelsStore.LookupEntry(i);
+                if (!levels)
+                    continue;
+
                 CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(i);
                 if (!cFamily)
                     continue;
 
                 if (skillLine->skillId != cFamily->skillLine[0] && skillLine->skillId != cFamily->skillLine[1])
                     continue;
-                if (spellInfo->GetSpellLevel())
+                if (levels->spellLevel)
                     continue;
 
                 if (skillLine->learnOnGetSkill != ABILITY_LEARNED_ON_GET_RACE_OR_CLASS_SKILL)
                     continue;
 
-                sPetFamilySpellsStore[i].insert( spellInfo->Id);
+                sPetFamilySpellsStore[i].insert(spellInfo->Id);
             }
         }
     }
@@ -600,10 +603,10 @@ void LoadDBCStores(const std::string& dataPath)
     {
         std::set<uint32> spellPaths;
         for (uint32 i = 1; i < sSpellStore.GetNumRows (); ++i)
-            if (SpellEntry const* sInfo = sSpellStore.LookupEntry (i))
+            if (SpellEffectEntry const* sInfo = sSpellEffectStore.LookupEntry(i))
                 for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
-                    if (sInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_SEND_TAXI)
-                        spellPaths.insert(sInfo->GetEffectMiscValue(j));
+                    if (sInfo->Effect == SPELL_EFFECT_SEND_TAXI)
+                        spellPaths.insert(sInfo->EffectMiscValue);
 
         memset(sTaxiNodesMask, 0, sizeof(sTaxiNodesMask));
         memset(sOldContinentsNodesMask, 0, sizeof(sOldContinentsNodesMask));

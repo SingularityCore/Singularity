@@ -329,6 +329,7 @@ public:
     uint32 AttributesEx5;
     uint32 AttributesEx6;
     uint32 AttributesEx7;
+    uint32 AttributesEx8;
     uint32 AttributesCu;
     uint32 Stances;
     uint32 StancesNot;
@@ -379,8 +380,8 @@ public:
     uint32 SpellVisual[2];
     uint32 SpellIconID;
     uint32 ActiveIconID;
-    const char* SpellName[16];
-    const char* Rank[16];
+    DBCString SpellName;
+    DBCString Rank;
     uint32 MaxTargetLevel;
     uint32 MaxAffectedTargets;
     uint32 SpellFamilyName;
@@ -389,11 +390,54 @@ public:
     uint32 PreventionType;
     int32  AreaGroupId;
     uint32 SchoolMask;
+    uint32 SpellDifficultyId;
+    uint32 SpellScalingId;
+    uint32 SpellAuraOptionsId;
+    uint32 SpellAuraRestrictionsId;
+    uint32 SpellCastingRequirementsId;
+    uint32 SpellCategoriesId;
+    uint32 SpellClassOptionsId;
+    uint32 SpellCooldownsId;
+    uint32 SpellEquippedItemsId;
+    uint32 SpellInterruptsId;
+    uint32 SpellLevelsId;
+    uint32 SpellPowerId;
+    uint32 SpellReagentsId;
+    uint32 SpellShapeshiftId;
+    uint32 SpellTargetRestrictionsId;
+    uint32 SpellTotemsId;
+    // SpellScalingEntry
+    int32  castTimeMin;
+    int32  castTimeMax;
+    uint32 castScalingMaxLevel;
+    uint32 playerClass;
+    float  Multiplier[3];
+    float  RandomMultiplier[3];
+    float  OtherMultiplier[3];
+    float  CoefBase;
+    uint32 CoefLevelBase;
     SpellEffectInfo Effects[MAX_SPELL_EFFECTS];
     uint32 ExplicitTargetMask;
     SpellChainNode const* ChainEntry;
 
     SpellInfo(SpellEntry const* spellEntry);
+
+    // struct access functions
+    SpellTargetRestrictionsEntry const* GetSpellTargetRestrictions() const;
+    SpellAuraOptionsEntry const* GetSpellAuraOptions() const;
+    SpellAuraRestrictionsEntry const* GetSpellAuraRestrictions() const;
+    SpellCastingRequirementsEntry const* GetSpellCastingRequirements() const;
+    SpellCategoriesEntry const* GetSpellCategories() const;
+    SpellClassOptionsEntry const* GetSpellClassOptions() const;
+    SpellCooldownsEntry const* GetSpellCooldowns() const;
+    SpellEquippedItemsEntry const* GetSpellEquippedItems() const;
+    SpellInterruptsEntry const* GetSpellInterrupts() const;
+    SpellLevelsEntry const* GetSpellLevels() const;
+    SpellPowerEntry const* GetSpellPower() const;
+    SpellReagentsEntry const* GetSpellReagents() const;
+    SpellScalingEntry const* GetSpellScaling() const;
+    SpellShapeshiftEntry const* GetSpellShapeshift() const;
+    SpellTotemsEntry const* GetSpellTotems() const;
 
     bool HasEffect(SpellEffects effect) const;
     bool HasAura(AuraType aura) const;
@@ -451,7 +495,6 @@ public:
     uint32 GetAllEffectsMechanicMask() const;
     uint32 GetEffectMechanicMask(uint8 effIndex) const;
     Mechanics GetEffectMechanic(uint8 effIndex) const;
-    uint32 GetEffectApplyAuraName(uint32 index) const;
     uint32 GetDispelMask() const;
     uint32 GetId() const { return Id; };
     static uint32 GetDispelMask(DispelType type);

@@ -1681,46 +1681,31 @@ struct SpellCooldownsEntry
 // SpellEffect.dbc
 struct SpellEffectEntry
 {
-    uint32    Id;                                           // 0        m_ID
-    uint32    Effect;                                       // 1        m_effect
-    float     EffectValueMultiplier;                        // 2        m_effectAmplitude
-    uint32    EffectApplyAuraName;                          // 3        m_effectAura
-    uint32    EffectAmplitude;                              // 4        m_effectAuraPeriod
-    int32     EffectBasePoints;                             // 5        m_effectBasePoints (don't must be used in spell/auras explicitly, must be used cached Spell::m_currentBasePoints)
-    float     EffectBonusCoefficient;                       // 6        m_effectBonusCoefficient
-    float     EffectDamageMultiplier;                       // 7        m_effectChainAmplitude
-    uint32    EffectChainTarget;                            // 8        m_effectChainTargets
-    int32     EffectDieSides;                               // 9        m_effectDieSides
-    uint32    EffectItemType;                               // 10       m_effectItemType
-    uint32    EffectMechanic;                               // 11       m_effectMechanic
-    int32     EffectMiscValue;                              // 12       m_effectMiscValue
-    int32     EffectMiscValueB;                             // 13       m_effectMiscValueB
-    float     EffectPointsPerComboPoint;                    // 14       m_effectPointsPerCombo
-    uint32    EffectRadiusIndex;                            // 15       m_effectRadiusIndex - spellradius.dbc
-    //uint32   EffectRadiusMaxIndex;                        // 16       4.0.0
-    float     EffectRealPointsPerLevel;                     // 17       m_effectRealPointsPerLevel
-    flag96    EffectSpellClassMask;                         // 18       m_effectSpellClassMask, effect 0
-    uint32    EffectTriggerSpell;                           // 19       m_effectTriggerSpell
-    uint32    EffectImplicitTargetA;                        // 20       m_implicitTargetA
-    uint32    EffectImplicitTargetB;                        // 21       m_implicitTargetB
-    uint32    EffectSpellId;                                // 22       new 4.0.0
-    uint32    EffectIndex;                                  // 23       new 4.0.0
-
-    // helpers
-    int32 CalculateSimpleValue() const { return EffectBasePoints; }
-    uint32 GetEffectItemType() const { return EffectItemType; }
-    uint32 GetEffectTriggerSpell() const { return EffectTriggerSpell; }
-    uint32 GetEffectAmplitude() const { return EffectAmplitude; }
-    uint32 GetEffectMiscValue() const { return EffectMiscValue; }
-    uint32 GetEffectMiscValueB() const { return EffectMiscValueB; }
-    uint32 GetEffectChainTarget() const { return EffectChainTarget; }
-    uint32 GetEffectDieSides() const { return EffectDieSides; }
-    uint32 GetEffectPointsPerComboPoint() const { return EffectPointsPerComboPoint; }
-    uint32 GetEffectRealPointsPerLevel() const { return EffectRealPointsPerLevel; }
-    uint32 GetEffectRadiusIndex() const { return EffectRadiusIndex; }
-    uint32 GetDmgMultiplier() const { return EffectDamageMultiplier; }
-    uint32 GetBonusMultiplier() const { return EffectBonusCoefficient; }
-    uint32 GetEffectMultipleValue() const { return EffectValueMultiplier; }
+    uint32    Id;                                           // 0         m_ID
+    uint32    Effect;                                       // 1         m_effect
+    float     EffectValueMultiplier;                        // 2         m_effectAmplitude
+    uint32    EffectApplyAuraName;                          // 3         m_effectAura
+    uint32    EffectAmplitude;                              // 4         m_effectAuraPeriod
+    int32     EffectBasePoints;                             // 5         m_effectBasePoints (don't must be used in spell/auras explicitly, must be used cached Spell::m_currentBasePoints)
+    float     EffectBonusMultiplier;                        // 6         m_effectBonus
+    float     EffectDamageMultiplier;                       // 7         m_effectChainAmplitude
+    uint32    EffectChainTarget;                            // 8         m_effectChainTargets
+    int32     EffectDieSides;                               // 9         m_effectDieSides
+    uint32    EffectItemType;                               // 10        m_effectItemType
+    uint32    EffectMechanic;                               // 11        m_effectMechanic
+    int32     EffectMiscValue;                              // 12        m_effectMiscValue
+    int32     EffectMiscValueB;                             // 13        m_effectMiscValueB
+    float     EffectPointsPerComboPoint;                    // 14        m_effectPointsPerCombo
+    uint32    EffectRadiusIndex;                            // 15        m_effectRadiusIndex - spellradius.dbc
+    uint32    EffectRadiusMaxIndex;                         // 16        4.0.0
+    float     EffectRealPointsPerLevel;                     // 17        m_effectRealPointsPerLevel
+    flag96    EffectSpellClassMask;                         // 18 19 20  m_effectSpellClassMask1(2/3), effect 0
+    uint32    EffectTriggerSpell;                           // 21        m_effectTriggerSpell
+    uint32    EffectImplicitTargetA;                        // 22        m_implicitTargetA
+    uint32    EffectImplicitTargetB;                        // 23        m_implicitTargetB
+    uint32    EffectSpellId;                                // 24        new 4.0.0
+    uint32    EffectIndex;                                  // 25        new 4.0.0
+    //uint32  Unk0                                          // 26        4.2.0
 };
 
 // SpellEquippedItems.dbc
@@ -1793,15 +1778,15 @@ typedef std::map<uint32, SpellReagent> SpellReagentMap;
 struct SpellScalingEntry
 {
     //uint32    Id;                                           // 0        m_ID
-    uint32    castTimeMin;                                  // 1
-    uint32    castTimeMax;                                  // 2
+    int32     castTimeMin;                                  // 1
+    int32     castTimeMax;                                  // 2
     uint32    castScalingMaxLevel;                          // 3
     uint32    playerClass;                                  // 4        (index * 100) + charLevel => gtSpellScaling.dbc
-    float     coeff1[3];                                    // 5-7
-    float     coeff2[3];                                    // 8-10
-    float     coeff3[3];                                    // 11-13
-    float     unkMult;                                      // 14        some coefficient, mostly 1.0f
-    uint32    unkLevel;                                     // 15        some level
+    float     Multiplier[3];                                // 5-7
+    float     RandomMultiplier[3];                          // 8-10
+    float     OtherMultiplier[3];                           // 11-13
+    float     CoefBase;                                     // 14        some coefficient, mostly 1.0f
+    uint32    CoefLevelBase;                                // 15        some level
 };
 
 // SpellShapeshift.dbc
@@ -1858,8 +1843,8 @@ struct SpellEntry
     uint32    AttributesEx4;                                // 5        m_attributesExD
     uint32    AttributesEx5;                                // 6        m_attributesExE
     uint32    AttributesEx6;                                // 7        m_attributesExF
-    uint32    AttributesEx7;                                // 8        m_attributesExG (0x20 - totems, 0x4 - paladin auras, etc...)
-    // uint32 someFlags;                                    // 9        4.0.0
+    uint32    AttributesEx7;                                // 8        m_attributesExG
+    uint32    AttributesEx8;                                // 9        m_attributesExH
     // uint32 unk_400_1;                                    // 10       4.0.0
     // uint32 unk_420_1                                     // 11       4.2.0
     uint32    CastingTimeIndex;                             // 12       m_castingTimeIndex
@@ -1898,104 +1883,8 @@ struct SpellEntry
     uint32 SpellTotemsId;                                   // 46       SpellTotems.dbc
     //uint32 ResearchProject;                               // 47       ResearchProject.dbc
 
-    int32 CalculateSimpleValue(uint32 eff) const;
-    //SpellEffectEntry
-    uint32 GetEffectItemType(uint32 eff) const;
-    uint32 GetEffectTriggerSpell(uint32 eff) const;
-    uint32 GetEffectAmplitude(uint32 eff) const;
-    int32 GetEffectMiscValue(uint32 eff) const;
-    int32 GetEffectMiscValueB(uint32 eff) const;
-    uint32 GetEffectChainTarget(uint32 eff) const;
-    uint32 GetEffectDieSides(uint32 eff) const;
-    uint32 GetEffectPointsPerComboPoint(uint32 eff) const;
-    uint32 GetEffectRealPointsPerLevel(uint32 eff) const;
-    uint32 GetEffectRadiusIndex(uint32 eff) const;
-    uint32 GetDmgMultiplier(uint32 eff) const;
-    uint32 GetBonusMultiplier(uint32 eff) const;
-    uint32 GetEffectMultipleValue(uint32 eff) const;
-    uint32 GetEffectSpellClassMask(uint32 eff) const;
-
     // struct access functions
-    SpellAuraOptionsEntry const* GetSpellAuraOptions() const;
-    SpellAuraRestrictionsEntry const* GetSpellAuraRestrictions() const;
-    SpellCastingRequirementsEntry const* GetSpellCastingRequirements() const;
-    SpellCategoriesEntry const* GetSpellCategories() const;
-    SpellClassOptionsEntry const* GetSpellClassOptions() const;
-    SpellCooldownsEntry const* GetSpellCooldowns() const;
     SpellEffectEntry const* GetSpellEffect(uint32 eff) const;
-    SpellEquippedItemsEntry const* GetSpellEquippedItems() const;
-    SpellInterruptsEntry const* GetSpellInterrupts() const;
-    SpellLevelsEntry const* GetSpellLevels() const;
-    SpellPowerEntry const* GetSpellPower() const;
-    SpellReagentsEntry const* GetSpellReagents(uint8 reagent) const;
-    SpellScalingEntry const* GetSpellScaling() const;
-    SpellShapeshiftEntry const* GetSpellShapeshift() const;
-    SpellTargetRestrictionsEntry const* GetSpellTargetRestrictions() const;
-    SpellTotemsEntry const* GetSpellTotems(uint8 totem) const;
-
-    // single fields
-    uint32 GetManaCost() const;
-    uint32 GetPreventionType() const;
-    uint32 GetCategory() const;
-    uint32 GetStartRecoveryTime() const;
-    uint32 GetMechanic() const;
-    uint32 GetRecoveryTime() const;
-    uint32 GetCategoryRecoveryTime() const;
-    uint32 GetStartRecoveryCategory() const;
-    uint32 GetSpellLevel() const;
-    int32 GetEquippedItemClass() const;
-    int32 GetEquippedItemSubClassMask() const;
-    int32 GetEquippedItemInventoryTypeMask() const;
-    uint32 GetSpellFamilyName() const;
-    flag96 GetSpellFamilyFlags() const;
-    uint32 GetDmgClass() const;
-    uint32 GetDispel() const;
-    uint32 GetMaxAffectedTargets() const;
-    uint32 GetStackAmount() const;
-    uint32 GetManaCostPercentage() const;
-    uint32 GetProcCharges() const;
-    uint32 GetProcChance() const;
-    uint32 GetMaxLevel() const;
-    uint32 GetMaxTargetLevel() const;
-    uint32 GetManaPerSecond() const;
-    uint32 GetRequiresSpellFocus() const;
-    uint32 GetSpellEffectIdByIndex(uint32 index) const;
-    uint32 GetSpellEffectMechanic(uint32 index) const;
-    uint32 GetSpellEffectBasePoints(uint32 index) const;    
-    uint32 GetAuraInterruptFlags() const;
-    uint32 GetEffectImplicitTargetAByIndex(uint32 index) const;
-    uint32 GetEffectImplicitTargetBByIndex(uint32 index) const;
-    int32 GetAreaGroupId() const;
-    uint32 GetFacingCasterFlags() const;
-    uint32 GetBaseLevel() const;
-    uint32 GetInterruptFlags() const;
-    uint32 GetTargetCreatureType() const;    
-    uint32 GetStances() const;
-    uint32 GetStancesNot() const;
-    uint32 GetProcFlags() const;
-    uint32 GetChannelInterruptFlags() const;
-    uint32 GetManaCostPerLevel() const;
-    uint32 GetTargets() const;
-    uint32 GetEffectApplyAuraNameByIndex(uint32 index) const;
-    //SpellAuraRestrictionsEntry
-    uint32 GetTargetAuraSpell() const;
-    uint32 GetTargetAuraState() const;
-    uint32 GetCasterAuraSpell() const;
-    uint32 GetCasterAuraState() const;
-    uint32 GetCasterAuraStateNot() const;
-    uint32 GetExcludeTargetAuraSpell() const;
-    uint32 GetExcludeCasterAuraSpell() const;
-    uint32 GetTargetAuraStateNot() const;
-    //SpellReagentsEntry
-    uint32 GetReagent(uint8 reagent) const;
-    uint32 GetReagentCount(uint8 reagent) const; 
-    //SpellTotemsEntry
-    uint32 GetTotem(uint8 totem) const;
-    uint32 GetTotemCategory(uint8 totem) const;
-
-    private:
-        // prevent creating custom entries (copy data from original in fact)
-        SpellEntry(SpellEntry const&);                      // DON'T must have implementation
 };
 
 typedef std::set<uint32> SpellCategorySet;
