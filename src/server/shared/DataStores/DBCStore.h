@@ -127,10 +127,14 @@ class DBCStorage
             char * sqlDataTable;
             fieldCount = dbc.GetCols();
 
-            dataTable = (T*)dbc.AutoProduceData(fmt, nCount, indexTable.asChar,
-                sqlRecordCount, sqlHighestIndex, sqlDataTable);
+            // load raw non-string data
+            dataTable = (T*)dbc.AutoProduceData(fmt, nCount, indexTable.asChar, sqlRecordCount, sqlHighestIndex, sqlDataTable);
 
-            stringPoolList.push_back(dbc.AutoProduceStrings(fmt, (char*)dataTable));
+            // create string holders for loaded string fields
+            stringPoolList.push_back(dbc.AutoProduceStringsArrayHolders(fmt,(char*)dataTable));
+
+            // load strings from dbc data
+            stringPoolList.push_back(dbc.AutoProduceStrings(fmt,(char*)dataTable));
 
             // Insert sql data into arrays
             if (result)
