@@ -1,0 +1,1 @@
+ALTER TABLE `trinity_string`  RENAME TO `singularity_string`;
