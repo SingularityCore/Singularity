@@ -42,6 +42,7 @@ class ObjectMgr;
 #define QUEST_REPUTATIONS_COUNT 5
 #define QUEST_EMOTE_COUNT 4
 #define QUEST_PVP_KILL_SLOT 0
+#define QUEST_CURRENCY_COUNT 4
 
 enum QuestFailedReasons
 {
