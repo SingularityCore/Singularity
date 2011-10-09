@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,33 +18,16 @@
 #ifndef DEF_DEADMINES_H
 #define DEF_DEADMINES_H
 
-enum CannonState
+enum DeadminesBossData
 {
-    CANNON_NOT_USED,
-    CANNON_GUNPOWDER_USED,
-    CANNON_BLAST_INITIATED,
-    PIRATES_ATTACK,
-    EVENT_DONE
+    BOSS_GLUBTOK_DATA        = 0,
+
+    MAX_ENCOUNTER            = 6,
 };
 
-enum Data
+enum DeadminesBoss
 {
-    EVENT_STATE,
-    EVENT_RHAHKZOR
-};
-
-enum Data64
-{
-    DATA_SMITE_CHEST
-};
-
-enum GameObjects
-{
-    GO_FACTORY_DOOR                                        = 13965,
-    GO_IRONCLAD_DOOR                                       = 16397,
-    GO_DEFIAS_CANNON                                       = 16398,
-    GO_DOOR_LEVER                                          = 101833,
-    GO_MR_SMITE_CHEST                                      = 144111
+    NPC_GLUBTOK              = 47162,
 };
 #endif
 
