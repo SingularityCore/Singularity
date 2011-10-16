@@ -1,3 +1,4 @@
+# Copyright (C) 2011 SingularityCore <http://www.singularitycore.org/>
 # Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
 #
 # This file is free software; as a special exception the author gives
@@ -8,6 +9,6 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-add_subdirectory(map_extractor)
+add_subdirectory(extractor)
 add_subdirectory(vmap3_assembler)
 add_subdirectory(vmap3_extractor)
