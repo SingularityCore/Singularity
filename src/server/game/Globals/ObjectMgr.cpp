@@ -7754,7 +7754,7 @@ void ObjectMgr::LoadGameObjectForQuests()
     sLog->outString();
 }
 
-bool ObjectMgr::LoadTrinityStrings(char const* table, int32 min_value, int32 max_value)
+bool ObjectMgr::LoadSingularityStrings(char const* table, int32 min_value, int32 max_value)
 {
     uint32 oldMSTime = getMSTime();
 
@@ -7798,7 +7798,7 @@ bool ObjectMgr::LoadTrinityStrings(char const* table, int32 min_value, int32 max
     {
 
         if (min_value == MIN_TRINITY_STRING_ID)              // error only in case internal strings
-            sLog->outErrorDb(">> Loaded 0 trinity strings. DB table `%s` is empty. Cannot continue.", table);
+            sLog->outErrorDb(">> Loaded 0 singularity strings. DB table `%s` is empty. Cannot continue.", table);
         else
             sLog->outString(">> Loaded 0 string templates. DB table `%s` is empty.", table);
         sLog->outString();
@@ -8678,7 +8678,7 @@ void ObjectMgr::CheckScripts(ScriptsType type, std::set<int32>& ids)
 
 void ObjectMgr::LoadDbScriptStrings()
 {
-    LoadTrinityStrings("db_script_string", MIN_DB_SCRIPT_STRING_ID, MAX_DB_SCRIPT_STRING_ID);
+    LoadSingularityStrings("db_script_string", MIN_DB_SCRIPT_STRING_ID, MAX_DB_SCRIPT_STRING_ID);
 
     std::set<int32> ids;
 
@@ -8693,7 +8693,7 @@ void ObjectMgr::LoadDbScriptStrings()
         sLog->outErrorDb("Table `db_script_string` has unused string id  %u", *itr);
 }
 
-bool LoadTrinityStrings(char const* table, int32 start_value, int32 end_value)
+bool LoadSingularityStrings(char const* table, int32 start_value, int32 end_value)
 {
     // MAX_DB_SCRIPT_STRING_ID is max allowed negative value for scripts (scrpts can use only more deep negative values
     // start/end reversed for negative values
@@ -8703,7 +8703,7 @@ bool LoadTrinityStrings(char const* table, int32 start_value, int32 end_value)
         return false;
     }
 
-    return sObjectMgr->LoadTrinityStrings(table, start_value, end_value);
+    return sObjectMgr->LoadSingularityStrings(table, start_value, end_value);
 }
 
 CreatureBaseStats const* ObjectMgr::GetCreatureBaseStats(uint8 level, uint8 unitClass)

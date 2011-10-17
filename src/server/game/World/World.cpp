@@ -1232,8 +1232,8 @@ void World::SetInitialWorldSettings()
 
     ///- Loading strings. Getting no records means core load has to be canceled because no error message can be output.
     sLog->outString();
-    sLog->outString("Loading Trinity strings...");
-    if (!sObjectMgr->LoadTrinityStrings())
+    sLog->outString("Loading Singularity strings...");
+    if (!sObjectMgr->LoadSingularityStrings())
         exit(1);                                            // Error message displayed in function already
 
     ///- Update the realm entry in the database with the realm type from the config file

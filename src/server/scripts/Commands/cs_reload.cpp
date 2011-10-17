@@ -150,7 +150,7 @@ public:
             { "spell_target_position",        SEC_ADMINISTRATOR, true,  &HandleReloadSpellTargetPositionCommand,        "", NULL },
             { "spell_threats",                SEC_ADMINISTRATOR, true,  &HandleReloadSpellThreatsCommand,               "", NULL },
             { "spell_group_stack_rules",      SEC_ADMINISTRATOR, true,  &HandleReloadSpellGroupStackRulesCommand,       "", NULL },
-            { "trinity_string",               SEC_ADMINISTRATOR, true,  &HandleReloadTrinityStringCommand,              "", NULL },
+            { "singularity_string",           SEC_ADMINISTRATOR, true,  &HandleReloadSingularityStringCommand,              "", NULL },
             { "waypoint_scripts",             SEC_ADMINISTRATOR, true,  &HandleReloadWpScriptsCommand,                  "", NULL },
             { "vehicle_accessory",            SEC_ADMINISTRATOR, true,  &HandleReloadVehicleAccessoryCommand,           "", NULL },
             { "vehicle_template_accessory",   SEC_ADMINISTRATOR, true,  &HandleReloadVehicleTemplateAccessoryCommand,   "", NULL },
@@ -190,7 +190,7 @@ public:
         HandleReloadMailLevelRewardCommand(handler, "");
         HandleReloadCommandCommand(handler, "");
         HandleReloadReservedNameCommand(handler, "");
-        HandleReloadTrinityStringCommand(handler, "");
+        HandleReloadSingularityStringCommand(handler, "");
         HandleReloadGameTeleCommand(handler, "");
 
         HandleReloadVehicleAccessoryCommand(handler, "");
@@ -711,11 +711,11 @@ public:
         return true;
     }
 
-    static bool HandleReloadTrinityStringCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleReloadSingularityStringCommand(ChatHandler* handler, const char* /*args*/)
     {
-        sLog->outString("Re-Loading trinity_string Table!");
-        sObjectMgr->LoadTrinityStrings();
-        handler->SendGlobalGMSysMessage("DB table `trinity_string` reloaded.");
+        sLog->outString("Re-Loading singularity_string Table!");
+        sObjectMgr->LoadSingularityStrings();
+        handler->SendGlobalGMSysMessage("DB table `singularity_string` reloaded.");
         return true;
     }
 

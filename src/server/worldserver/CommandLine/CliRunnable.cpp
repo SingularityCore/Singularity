@@ -113,7 +113,7 @@ void utf8print(void* /*arg*/, const char* str)
 
 void commandFinished(void*, bool /*success*/)
 {
-    printf("TC> ");
+    printf("SC> ");
     fflush(stdout);
 }
 /**
@@ -572,7 +572,7 @@ void CliRunnable::run()
 
     // print this here the first time
     // later it will be printed after command queue updates
-    printf("TC>");
+    printf("SC>");
 
     ///- As long as the World is running (no World::m_stopEvent), get the command line and handle it
     while (!World::IsStopped())

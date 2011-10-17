@@ -847,8 +847,8 @@ class ObjectMgr
         void LoadSpellScriptNames();
         void ValidateSpellScripts();
 
-        bool LoadTrinityStrings(char const* table, int32 min_value, int32 max_value);
-        bool LoadTrinityStrings() { return LoadTrinityStrings("singularity_string", MIN_TRINITY_STRING_ID, MAX_TRINITY_STRING_ID); }
+        bool LoadSingularityStrings(char const* table, int32 min_value, int32 max_value);
+        bool LoadSingularityStrings() { return LoadSingularityStrings("singularity_string", MIN_TRINITY_STRING_ID, MAX_TRINITY_STRING_ID); }
         void LoadDbScriptStrings();
         void LoadCreatureClassLevelStats();
         void LoadCreatureLocales();
@@ -1352,6 +1352,6 @@ class ObjectMgr
 #define sObjectMgr ACE_Singleton<ObjectMgr, ACE_Null_Mutex>::instance()
 
 // scripting access functions
-bool LoadTrinityStrings(char const* table, int32 start_value = MAX_CREATURE_AI_TEXT_STRING_ID, int32 end_value = std::numeric_limits<int32>::min());
+bool LoadSingularityStrings(char const* table, int32 start_value = MAX_CREATURE_AI_TEXT_STRING_ID, int32 end_value = std::numeric_limits<int32>::min());
 
 #endif
