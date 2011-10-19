@@ -34,6 +34,7 @@
 #include "MotionMaster.h"
 #include "DBCStructure.h"
 #include "SpellInfo.h"
+#include "WorldPacket.h"
 #include "DBCStores.h"
 #include "Path.h"
 #include "Opcodes.h"
