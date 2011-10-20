@@ -178,12 +178,12 @@ typedef UNORDERED_MAP<uint32, CreatureTemplate> CreatureTemplateContainer;
 // Represents max amount of expansions.
 // TODO: Add MAX_EXPANSION constant.
 #define MAX_CREATURE_BASE_HP 4 // check is < not =<
-#define MAX_CREATURE_BASE_MANA 2
+
 // Defines base stats for creatures (used to calculate HP/mana/armor).
 struct CreatureBaseStats
 {
     uint32 BaseHealth[MAX_CREATURE_BASE_HP];
-    uint32 BaseMana[MAX_CREATURE_BASE_MANA];    
+    uint32 BaseMana;
     uint32 BaseArmor;
 
     // Helpers
@@ -194,17 +194,12 @@ struct CreatureBaseStats
     }
 
     uint32 GenerateMana(CreatureTemplate const* info) const
-    {        
-        // No Mana
-        if (!BaseMana[0] && !BaseMana[1])
+    {
+        // Mana can be 0.
+        if (!BaseMana)
             return 0;
 
-        uint32 BaseManaAmount = 0;
-
-        if (info->expansion == 3)
-            BaseManaAmount = 1;
-
-        return uint32((BaseMana[BaseManaAmount] * info->ModMana) + 0.5f);
+        return uint32((BaseMana * info->ModMana) + 0.5f);
     }
 
     uint32 GenerateArmor(CreatureTemplate const* info) const
