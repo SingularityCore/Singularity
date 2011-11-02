@@ -227,20 +227,25 @@ enum AchievementCriteriaTypes
     ACHIEVEMENT_CRITERIA_TYPE_ACCEPTED_SUMMONINGS = 114,
     ACHIEVEMENT_CRITERIA_TYPE_EARN_ACHIEVEMENT_POINTS = 115,
     ACHIEVEMENT_CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS = 119,
-    // 124 Spend X gold on guildmember repairs.
-    // 125 Reach guild level X
-    // 126 Craft X items
-    // 127 Catch X fish from fishing pools.
-    // 128 Purchase the X guild bank tab.
-    // 129 Earn X guild achievement points.
-    // 130 Win X rated battlegrounds.
-    // 131 unused
-    // 132 Earn a battleground rating of X.
-    // 133 Create and purchase a guild crest.
-    // 134 Complete quests
-    // 135 Honorable kills
-    // 0..135 => 136 criteria types total
-    ACHIEVEMENT_CRITERIA_TYPE_TOTAL = 136,
+    // 120 -
+    // 121 -
+    // 122 -
+    // 123 -
+    ACHIEVEMENT_CRITERIA_TYPE_SPENT_GOLD_GUILD_REPAIRS = 124,
+    ACHIEVEMENT_CRITERIA_TYPE_REACH_GUILD_LEVEL = 125,
+    ACHIEVEMENT_CRITERIA_TYPE_CRAFT_ITEMS_GUILD = 126,
+    ACHIEVEMENT_CRITERIA_TYPE_CATCH_FROM_POOL = 127,
+    ACHIEVEMENT_CRITERIA_TYPE_BUY_GUILD_BANK_SLOTS = 128,
+    ACHIEVEMENT_CRITERIA_TYPE_EARN_GUILD_ACHIEVEMENT_POINTS = 129,
+    ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_BATTLEGROUND = 130,
+    // 131 -
+    ACHIEVEMENT_CRITERIA_TYPE_REACH_BG_RATING = 132,
+    ACHIEVEMENT_CRITERIA_TYPE_BUY_GUILD_TABARD = 133,
+    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_GUILD = 134,
+    ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILLS_GUILD = 135,
+    ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD = 136,
+    // 0..136 => 137 criteria types total
+    ACHIEVEMENT_CRITERIA_TYPE_TOTAL = 137,
 };
 
 enum AchievementCriteriaMoreReqType

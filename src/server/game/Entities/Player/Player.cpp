@@ -17175,7 +17175,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadDeclinedNames(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADDECLINEDNAMES));
 
-    //m_achievementMgr.GetAchievementPoints();
+    m_achievementMgr.GetAchievementPoints();
     m_achievementMgr.CheckAllAchievementCriteria();
 
     _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
@@ -18536,7 +18536,7 @@ void Player::SaveToDB()
         ss << GetUInt32Value(PLAYER__FIELD_KNOWN_TITLES + i) << " ";
 
     ss << "', ";
-    ss << uint32(0/*m_achievementMgr.GetAchievementPoints()*/);
+    ss << uint32(m_achievementMgr.GetAchievementPoints());
     ss << ",";
     ss << uint32(GetByteValue(PLAYER_FIELD_BYTES, 2));
     ss << ")";

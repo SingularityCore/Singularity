@@ -836,18 +836,26 @@ uint32 GetVirtualMapForMapAndZone(uint32 mapid, uint32 zoneId)
 ContentLevels GetContentLevelsForMapAndZone(uint32 mapid, uint32 zoneId)
 {
     mapid = GetVirtualMapForMapAndZone(mapid, zoneId);
-    if (mapid < 2)
+    if (mapid < 2 || mapid == 648 || mapid == 654)
         return CONTENT_1_60;
 
     MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
     if (!mapEntry)
         return CONTENT_1_60;
 
+    if (zoneId == 5034 || zoneId == 4922 || zoneId == 616 || zoneId == 5146 || zoneId == 5042)
+       return CONTENT_81_85;
+
     switch(mapEntry->Expansion())
     {
-        default: return CONTENT_1_60;
-        case 1:  return CONTENT_61_70;
-        case 2:  return CONTENT_71_80;
+        default: 
+            return CONTENT_1_60;
+        case 1:  
+            return CONTENT_61_70;
+        case 2:  
+            return CONTENT_71_80;
+        case 3:  
+            return CONTENT_81_85;
     }
 }
 
