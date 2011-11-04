@@ -39,9 +39,9 @@
 #include "StormCommon.h"
 #include "typedefs.h"
 
-static int const patchRev[] = {13164, 13205, 13287, 13329, 13596, 13623, 13914, 14007, 14333};
-#define PATCH_REV_COUNT 9
-#define CLIENT_BUILD 14333
+static int const patchRev[] = {13164, 13205, 13287, 13329, 13596, 13623, 13914, 14007, 14333, 14480};
+#define PATCH_REV_COUNT 10
+#define CLIENT_BUILD 14480
 #define MAX_EXPANSION 3
 
 static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
