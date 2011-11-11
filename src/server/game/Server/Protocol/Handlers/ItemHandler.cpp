@@ -740,32 +740,45 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
     if (vendor->HasUnitState(UNIT_STAT_MOVING))
         vendor->StopMoving();
 
-    VendorItemData const* items = vendor->GetVendorItems();
-    if (!items)
+    VendorItemData const* vendorItems = vendor->GetVendorItems();
+
+    if (!vendorItems)
     {
-        WorldPacket data(SMSG_LIST_INVENTORY, 4 + 1 + 1);
-        data << uint32(0);                                  // last visited vendor
-        data << uint8(0);                                   // count == 0, next will be error code
-        data << uint8(0);                                   // some kind of bool set 1 to open window.
+        WorldPacket data(SMSG_LIST_INVENTORY, 1 + 8 + 4 + 1 + 1);
+
+        data << uint8(0x00);
+        data << uint32(0); // count == 0, next will be error code
+        data << uint8(0); // "Vendor has no inventory"
         SendPacket(&data);
         return;
     }
 
-    uint32 itemCount = items->GetItemCount();
-    uint8 count = 0;
+    uint32 itemCount = vendorItems->GetItemCount();
+    uint32 count = 0;
 
-    WorldPacket data(SMSG_LIST_INVENTORY, 1 + 1 + 4 + itemCount * 10 * 10 + 2);
+    WorldPacket data(SMSG_LIST_INVENTORY, 1 + 6 + 4 + 1 + itemCount * 10 * 4);
+
+    // ToDo: vendorGuid
+    data << uint8(0xEB);
+
+    data << uint8(0);
+    data << uint8(0);
+    data << uint8(0);
+    data << uint8(0);
     data << uint8(0);
 
     size_t countPos = data.wpos();
-    data << uint8(count);
-    data << uint32(0);
+    data << uint32(count);
+
+    data << uint8((count % 10) == 0 ? count / 10 : (count / 10) + 1);
+
+    data << uint8(0);
 
     float discountMod = _player->GetReputationPriceDiscount(vendor);
 
-    for (uint32 slot = 0; slot < itemCount; ++slot)
+    for (uint32 vendorSlot = 0; vendorSlot < itemCount; ++vendorSlot)
     {
-        if (VendorItem const* item = items->GetItem(slot))
+        if (VendorItem const* item = vendorItems->GetItem(vendorSlot))
         {
             if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(item->item))
             {
@@ -782,22 +795,24 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
                     continue;
 
                 ++count;
-                if (count == 150)
-                    break;
+
+                if (count == MAX_VENDOR_ITEMS)
+                    break; // client can only display 15 pages
 
                 // reputation discount
-                int32 price = item->IsGoldRequired(itemTemplate) ? uint32(floor(itemTemplate->BuyPrice * discountMod)) : 0;
+                uint32 buyCost = item->IsGoldRequired(itemTemplate) ? uint32(floor(itemTemplate->BuyPrice * discountMod)) : 0;
 
-                data << item->item;
-                data << uint32(slot + 1);       // client expects counting to start at 1
-                data << uint32(price);
-                data << uint32(itemTemplate->DisplayInfoID);
-                data << int32(leftInStock);
-                data << uint32(itemTemplate->MaxDurability);
-                data << uint32(itemTemplate->BuyCount);
-                data << uint32(item->ExtendedCost);
-                data << uint32(0); // unk 4.0.1
-                data << uint32(1); // unknow value 4.0.1, always 1
+                // 4.2.0.14480
+                data << uint32(buyCost); // BuyCost
+                data << uint32(0); // Unknown 4.2.0.14333
+                data << uint32(1); // Unknown 4.2.0.14333
+                data << uint32(itemTemplate->MaxDurability); // Durability
+                data << uint32(item->ExtendedCost); // ExtendedCost
+                data << uint32(itemTemplate->BuyCount); // BuyCount
+                data << uint32(leftInStock); // MaxCount
+                data << uint32(vendorSlot + 1); // client expects counting to start at 1
+                data << uint32(itemTemplate->DisplayInfoID); // DisplayId
+                data << item->item; // ItemId
             }
         }
     }
@@ -809,7 +824,7 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
         return;
     }
 
-    data.put<uint8>(countPos, count);
+    data.put<uint32>(countPos, count);
     SendPacket(&data);
 }
 
