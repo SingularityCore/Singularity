@@ -676,6 +676,7 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( CMSG_SET_ACTIVE_MOVER,                        STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleSetActiveMoverOpcode      );
     DEFINE_OPCODE_HANDLER( CMSG_REQUEST_CATEGORY_COOLDOWNS,              STATUS_UNHANDLED,PROCESS_INPLACE,       &WorldSession::Handle_NULL                     );
     DEFINE_OPCODE_HANDLER( CMSG_LFG_GET_PLAYER_INFO,                     STATUS_UNHANDLED,PROCESS_INPLACE,       &WorldSession::Handle_NULL                     );
+    DEFINE_OPCODE_HANDLER( CMSG_QUERY_INSPECT_ACHIEVEMENTS,              STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleQueryInspectAchievement   );    
     DEFINE_OPCODE_HANDLER( SMSG_RESPOND_INSPECT_ACHIEVEMENTS,            STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_TOTEM_CREATED,                           STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
 
@@ -777,6 +778,7 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( CMSG_FORCE_TURN_RATE_CHANGE_ACK,              STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleForceSpeedChangeAck       );
     DEFINE_OPCODE_HANDLER( CMSG_FORCE_SWIM_SPEED_CHANGE_ACK,             STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleForceSpeedChangeAck       );
     DEFINE_OPCODE_HANDLER( CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK,        STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleForceSpeedChangeAck       );
+    DEFINE_OPCODE_HANDLER( CMSG_MOVE_SPLINE_DONE,                        STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleMoveSplineDoneOpcode      );
     DEFINE_OPCODE_HANDLER( MSG_MOVE_FALL_LAND,                           STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleMovementOpcodes           );
     DEFINE_OPCODE_HANDLER( MSG_MOVE_HEARTBEAT,                           STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleMovementOpcodes           );
     DEFINE_OPCODE_HANDLER( MSG_MOVE_HOVER,                               STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_NULL                     );
@@ -942,6 +944,7 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( SMSG_BATTLEGROUND_PLAYER_POSITIONS,           STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( CMSG_REQUEST_RATED_BG_INFO,                   STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::Handle_NULL                     );
     // Trade:
+    DEFINE_OPCODE_HANDLER( SMSG_INIT_CURRENCY,                           STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( CMSG_ACCEPT_TRADE,                            STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleAcceptTradeOpcode         );
     DEFINE_OPCODE_HANDLER( CMSG_UNACCEPT_TRADE,                          STATUS_LOGGEDIN, PROCESS_THREADUNSAFE,  &WorldSession::HandleUnacceptTradeOpcode       );
     DEFINE_OPCODE_HANDLER( CMSG_CANCEL_TRADE,                            STATUS_LOGGEDIN_OR_RECENTLY_LOGGOUT, PROCESS_THREADUNSAFE, &WorldSession::HandleCancelTradeOpcode);

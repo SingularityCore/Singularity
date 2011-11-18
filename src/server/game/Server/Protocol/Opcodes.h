@@ -69,7 +69,7 @@ enum Opcodes
     CMSG_BANKER_ACTIVATE                             = 0x03627, // 14480
     CMSG_BATTLEFIELD_JOIN                            = 0x0A860, // 14333
     CMSG_BATTLEFIELD_REQUEST_SCORE_DATA              = 0x0886B, // 14333
-    CMSG_BATTLEFIELD_STATUS                          = 0x050D0, // 14333
+    CMSG_BATTLEFIELD_STATUS                          = 0x38E8, // 14333
     CMSG_BATTLEGROUND_PLAYER_POSITIONS               = 0x098EB, // 14333
     CMSG_BATTLEMASTER_JOIN_ARENA                     = 0x0086A, // 14333
     CMSG_BEGIN_TRADE                                 = 0x10093, //
@@ -276,6 +276,7 @@ enum Opcodes
     CMSG_MOUNTSPECIAL_ANIM                           = 0x0AA6F, // 14333
     CMSG_MOVE_KNOCK_BACK_ACK                         = 0x10078, //
     CMSG_MOVE_SET_RAW_POSITION                       = 0x1006A, //
+    CMSG_MOVE_SPLINE_DONE                            = 0x018CA,
     CMSG_MOVE_TIME_SKIPPED                           = 0x02848, // 14480
     CMSG_ENABLE_NAGLE                                = 0x02120, // 14333
     CMSG_NAME_QUERY                                  = 0x07266, // 14480
@@ -310,6 +311,7 @@ enum Opcodes
     CMSG_PLAYER_VEHICLE_ENTER                        = 0x0EEA2, // 14333
     CMSG_PLAY_DANCE                                  = 0x0323B, // 14333
     CMSG_PUSHQUESTTOPARTY                            = 0x022B2, // 14333
+    CMSG_QUERY_INSPECT_ACHIEVEMENTS                  = 0x032A7,
     CMSG_QUERY_GUILD_REWARDS                         = 0x10024, //
     CMSG_QUERY_GUILD_MAX_XP                          = 0x10025, //
     CMSG_QUERY_GUILD_XP                              = 0x10026, //
@@ -714,7 +716,7 @@ enum Opcodes
     SMSG_HIGHEST_THREAT_UPDATE                       = 0x036AB, // 14480
     SMSG_INITIALIZE_FACTIONS                         = 0x03A2A, // 14333
     SMSG_INITIAL_SPELLS                              = 0x0F6AE, // 14333
-    SMSG_INIT_CURRENCY                               = 0x08B07, // 14333
+    SMSG_INIT_CURRENCY                               = 0x08B07, // 14480
     SMSG_INIT_WORLD_STATES                           = 0x07EB7, // 14333
     SMSG_INSPECT                                     = 0x0BA7E, // 14333
     SMSG_INSPECT_HONOR_STATS                         = 0x0CF21, // 14333

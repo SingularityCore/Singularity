@@ -13573,6 +13573,7 @@ void Unit::SetPower(Powers power, uint32 val)
     WorldPacket data(SMSG_POWER_UPDATE);
     data.append(GetPackGUID());
     data << uint8(GetPowerIndexByClass(power, getClass()));
+    data << uint32(0); //unk
     data << uint32(val);
     SendMessageToSet(&data, GetTypeId() == TYPEID_PLAYER ? true : false);
 

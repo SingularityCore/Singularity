@@ -1731,3 +1731,11 @@ void WorldSession::HandleViolenceLevelOpcode(WorldPacket & recv_data)
    std::string unk;
    recv_data >> unk;
 }
+
+void WorldSession::HandleQueryInspectAchievement(WorldPacket &  recv_data)
+{
+    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: CMSG_QUERY_INSPECT_ACHIEVEMENTS");
+    uint64 guid;
+    recv_data >> guid;
+}
+

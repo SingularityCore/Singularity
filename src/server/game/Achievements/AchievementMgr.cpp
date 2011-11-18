@@ -690,7 +690,7 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
     data.append(GetPlayer()->GetPackGUID());
     data << uint32(achievement->ID);
     data << uint32(secsToTimeBitFields(time(NULL)));
-    data << uint32(0);
+    data << uint32(0); //unk
     GetPlayer()->SendMessageToSetInRange(&data, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), true);
 }
 
@@ -703,13 +703,13 @@ void AchievementMgr::SendCriteriaUpdate(AchievementCriteriaEntry const* entry, C
     data.appendPackGUID(progress->counter);
 
     data.append(GetPlayer()->GetPackGUID());
+    data << uint32(0);              // unk
     if (!entry->timeLimit)
         data << uint32(0);
     else
         data << uint32(timedCompleted ? 0 : 1); // this are some flags, 1 is for keeping the counter at 0 in client
     data << uint32(secsToTimeBitFields(progress->date));
-    data << uint32(timeElapsed);    // time elapsed in seconds
-    data << uint32(0);              // unk
+    data << uint32(timeElapsed);    // time elapsed in seconds    
     GetPlayer()->SendDirectMessage(&data);
 }
 

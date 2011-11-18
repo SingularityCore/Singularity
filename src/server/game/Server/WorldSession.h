@@ -917,6 +917,7 @@ class WorldSession
         void HandleUpdateProjectilePosition(WorldPacket& recvPacket);
 
         void HandleViolenceLevelOpcode(WorldPacket& recvPacket);
+        void HandleQueryInspectAchievement(WorldPacket& recvPacket);
     private:
         void InitializeQueryCallbackParameters();
         void ProcessQueryCallbacks();
